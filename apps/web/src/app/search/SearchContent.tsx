@@ -1,0 +1,288 @@
+"use client"
+
+import { useState, useCallback, useRef, useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { search, type SearchResult } from "@/lib/api"
+import { addToHistory } from "@/lib/searchHistory"
+import SearchBar from "@/components/SearchBar"
+import ResultCard from "@/components/ResultCard"
+import FilterBar from "@/components/FilterBar"
+
+const PAGE_SIZE = 20
+
+const SAMPLE_QUERIES = [
+  { ar: "رحمة",  fr: "miséricorde" },
+  { ar: "صبر",   fr: "patience" },
+  { ar: "زكاة",  fr: "aumône" },
+  { ar: "وحي",   fr: "révélation" },
+  { ar: "توبة",  fr: "repentir" },
+]
+
+export default function SearchContent() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const initialQuery = searchParams.get("q") ?? ""
+  const initialTypes = searchParams.getAll("types")
+
+  const [results, setResults] = useState<SearchResult[]>([])
+  const [query, setQuery] = useState(initialQuery)
+  const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [activeTypes, setActiveTypes] = useState<string[]>(initialTypes)
+  const [searched, setSearched] = useState(false)
+  const [hasMore, setHasMore] = useState(false)
+  const [total, setTotal] = useState(0)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const offsetRef = useRef(0)
+  const currentQueryRef = useRef(initialQuery)
+
+  const pushUrl = useCallback((q: string, types: string[]) => {
+    const params = new URLSearchParams()
+    if (q) params.set("q", q)
+    types.forEach((t) => params.append("types", t))
+    const qs = params.toString()
+    router.replace(`/search${qs ? `?${qs}` : ""}`, { scroll: false })
+  }, [router])
+
+  const runSearch = useCallback(async (q: string, types: string[]) => {
+    if (!q.trim()) return
+    setLoading(true)
+    setError(null)
+    setQuery(q)
+    setSearched(true)
+    setResults([])
+    setTotal(0)
+    offsetRef.current = 0
+    currentQueryRef.current = q
+    addToHistory(q)
+    pushUrl(q, types)
+    try {
+      const res = await search(q, types, PAGE_SIZE, 0)
+      setResults(res.results)
+      setTotal(res.total)
+      setHasMore(res.results.length === PAGE_SIZE)
+      offsetRef.current = PAGE_SIZE
+    } catch {
+      setError("Impossible de joindre l'API. Vérifiez que le backend est démarré.")
+    } finally {
+      setLoading(false)
+    }
+  }, [pushUrl])
+
+  useEffect(() => {
+    if (initialQuery) {
+      const timer = setTimeout(() => {
+        runSearch(initialQuery, initialTypes)
+      }, 0)
+      return () => clearTimeout(timer)
+    }
+  }, [initialQuery, initialTypes, runSearch])
+
+  const handleLoadMore = async () => {
+    if (loadingMore || !currentQueryRef.current) return
+    setLoadingMore(true)
+    try {
+      const res = await search(currentQueryRef.current, activeTypes, PAGE_SIZE, offsetRef.current)
+      setResults((prev) => [...prev, ...res.results])
+      setHasMore(res.results.length === PAGE_SIZE)
+      offsetRef.current += PAGE_SIZE
+    } catch {
+      setHasMore(false)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  const handleTypeChange = (types: string[]) => {
+    setActiveTypes(types)
+    if (searched && currentQueryRef.current) {
+      runSearch(currentQueryRef.current, types)
+    }
+  }
+
+  /* ── État pré-recherche ── */
+  if (!searched) {
+    return (
+      <div
+        className="flex-1 flex flex-col items-center justify-center px-6 py-20 gap-6"
+        style={{ background: "var(--color-bg)" }}
+      >
+        <p className="arabic-xl float shimmer-text" style={{ display: "block", color: "var(--color-gold)" }}>
+          ٱقْرَأْ بِٱسْمِ رَبِّكَ
+        </p>
+        <div className="w-full max-w-2xl">
+          <SearchBar
+            onSearch={(q) => runSearch(q, activeTypes)}
+            loading={loading}
+            initialValue={initialQuery}
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 justify-center mt-2">
+          {SAMPLE_QUERIES.map((q) => (
+            <button
+              key={q.ar}
+              onClick={() => runSearch(q.ar, activeTypes)}
+              className="px-3 py-1 rounded-full text-xs border transition-opacity hover:opacity-70"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}
+            >
+              <span className="arabic">{q.ar}</span>
+              <span className="opacity-60"> — {q.fr}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  /* ── Mise en page post-recherche ── */
+  return (
+    <div className="flex flex-1" style={{ minHeight: 0 }}>
+      {/* Barre latérale */}
+      <aside
+        className="hidden md:block w-60 shrink-0 border-r"
+        style={{
+          background: "var(--color-surface-2)",
+          borderColor: "var(--color-border)",
+          position: "sticky",
+          top: "57px",
+          height: "calc(100vh - 57px)",
+          overflowY: "auto",
+        }}
+      >
+        <FilterBar activeTypes={activeTypes} onChange={handleTypeChange} />
+      </aside>
+
+      {/* Zone principale */}
+      <main className="flex-1 min-w-0" style={{ background: "var(--color-bg)" }}>
+        {/* En-tête compact avec recherche */}
+        <div
+          className="sticky top-[57px] z-10 border-b"
+          style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
+        >
+          <div className="px-6 py-4 flex items-center gap-3">
+            <div className="flex-1">
+              <SearchBar
+                onSearch={(q) => runSearch(q, activeTypes)}
+                loading={loading}
+                initialValue={query}
+              />
+            </div>
+            <button
+              onClick={() => setMobileFiltersOpen((o) => !o)}
+              className="md:hidden flex-shrink-0 px-3 py-2 rounded-lg border text-xs"
+              style={{
+                borderColor: mobileFiltersOpen ? "var(--color-gold)" : "var(--color-border)",
+                color: mobileFiltersOpen ? "var(--color-gold)" : "var(--color-text-muted)",
+                background: "var(--color-surface-2)",
+              }}
+            >
+              Filtres{activeTypes.length > 0 ? ` (${activeTypes.length})` : ""}
+            </button>
+          </div>
+          {mobileFiltersOpen && (
+            <div className="md:hidden border-t px-4 py-3" style={{ borderColor: "var(--color-border)" }}>
+              <FilterBar activeTypes={activeTypes} onChange={handleTypeChange} />
+            </div>
+          )}
+        </div>
+
+        {/* Résultats */}
+        <div className="px-6 sm:px-10 py-8 max-w-3xl">
+          {/* Méta + partage */}
+          {(results.length > 0 || total > 0) && (
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+                {total > 0 ? total : results.length} résultats pour{" "}
+                <span style={{ color: "var(--color-text)" }}>« {query} »</span>
+              </p>
+              <button
+                onClick={() => navigator.clipboard.writeText(window.location.href)}
+                className="text-xs px-3 py-1 rounded-lg border transition-opacity hover:opacity-70"
+                style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}
+              >
+                Partager
+              </button>
+            </div>
+          )}
+
+          {/* Erreur */}
+          {error && (
+            <div
+              className="p-5 mb-6 text-sm border"
+              style={{
+                background: "rgba(250,247,239,0.03)",
+                color: "rgba(250,247,239,0.50)",
+                borderColor: "rgba(250,247,239,0.08)",
+                borderRadius: "2px",
+                lineHeight: 1.7,
+              }}
+            >
+              Service temporairement indisponible — veuillez démarrer le backend ou réessayer dans un moment.
+            </div>
+          )}
+
+          {/* Vide */}
+          {searched && !loading && results.length === 0 && !error && (
+            <p className="py-16 text-center" style={{ color: "var(--color-text-muted)" }}>
+              Aucun résultat pour « {query} »
+            </p>
+          )}
+
+          {/* Squelette de chargement */}
+          {loading && (
+            <div className="flex flex-col gap-0">
+              {[1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  className="py-6 border-b animate-pulse"
+                  style={{ borderColor: "var(--color-border)" }}
+                >
+                  <div
+                    className="h-3 w-32 rounded mb-3"
+                    style={{ background: "var(--color-border)" }}
+                  />
+                  <div
+                    className="h-8 w-3/4 rounded mb-2"
+                    style={{ background: "var(--color-border)" }}
+                  />
+                  <div
+                    className="h-3 w-1/2 rounded"
+                    style={{ background: "var(--color-surface-2)" }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Liste des résultats */}
+          {!loading && results.length > 0 && (
+            <div>
+              {results.map((r, i) => (
+                <ResultCard key={r.id} result={r} index={i + 1} />
+              ))}
+
+              {/* Charger plus */}
+              {hasMore && (
+                <div className="mt-8 flex justify-center">
+                  <button
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="px-8 py-3 rounded-xl font-medium text-sm border transition-opacity hover:opacity-70 disabled:opacity-40"
+                    style={{
+                      borderColor: "var(--color-border)",
+                      color: "var(--color-text-muted)",
+                    }}
+                  >
+                    {loadingMore ? "Chargement…" : "Charger plus de résultats"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  )
+}

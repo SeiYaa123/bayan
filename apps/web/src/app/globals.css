@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+:root {
+  /* ── Palette ── */
+  --color-emerald:      #0D3B2E;
+  --color-emerald-deep: #081f19;
+  --color-sand:         #DCC9A6;
+  --color-parchment:    #FAF7EF;
+  --color-ink:          #1B1B1F;
+  --color-gold:         #C89D3A;
+  --color-gold-light:   #e8c56a;
+
+  /* ── Dark cinematic theme ── */
+  --color-forest:       #0D3B2E;
+  --color-forest-dark:  #081f19;
+  --color-forest-soft:  rgba(200,157,58,0.08);
+  --color-bg:           #050d07;
+  --color-surface:      #0b1a0d;
+  --color-surface-2:    #0e2010;
+  --color-border:       rgba(250,247,239,0.08);
+  --color-border-soft:  rgba(250,247,239,0.05);
+  --color-text:         #FAF7EF;
+  --color-text-muted:   rgba(250,247,239,0.45);
+  --color-accent:       #C89D3A;
+  --color-sage:         #C89D3A;
+}
+
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --font-sans: 'Inter', var(--font-geist-sans), system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Typographie ── */
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* ── Texte arabe ── */
+.arabic-interface {
+  font-family: 'Tajawal', sans-serif;
+}
+
+.arabic-quran {
+  font-family: "Amiri", serif;
+  direction: rtl;
+  font-size: 1.8rem;
+  line-height: 2.8rem;
+}
+
+.arabic {
+  font-family: 'Tajawal', sans-serif;
+  direction: rtl;
+}
+
+.arabic-lg {
+  font-family: 'Amiri', serif;
+  direction: rtl;
+  font-size: 1.35rem;
+  line-height: 2.4rem;
+  letter-spacing: 0.02em;
+}
+
+.arabic-xl {
+  font-family: 'Amiri', serif;
+  direction: rtl;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  line-height: 3rem;
+  letter-spacing: 0.02em;
+}
+
+.arabic-deco {
+  font-family: 'Amiri', serif;
+  direction: rtl;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* ── Animation ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes shimmer {
+  0%   { opacity: 0.6; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.float        { animation: float 4s ease-in-out infinite; }
+.shimmer-text { animation: shimmer 3s ease-in-out infinite; }
+
+/* ── Boutons ── */
+.btn-primary {
+  background: var(--color-gold);
+  color: #050d07;
+  border-radius: 4px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-text);
+  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s;
+}
+
+.btn-filter {
+  background: rgba(250,247,239,0.04);
+  border: 1px solid rgba(250,247,239,0.10);
+  color: var(--color-text-muted);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+}
+
+.card-verse {
+  background: rgba(250,247,239,0.04);
+  border: 1px solid rgba(250,247,239,0.08);
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+.highlight-term {
+  background: rgba(200,157,58,0.20);
+  color: #C89D3A;
+  font-weight: 600;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* ── Badges corpus ── */
+.badge-quran {
+  background: rgba(200,157,58,0.10);
+  color: #C89D3A;
+  border: 1px solid rgba(200,157,58,0.22);
+}
+
+.badge-hadith {
+  background: rgba(96,165,250,0.10);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.22);
+}
+
+.badge-tafsir {
+  background: rgba(167,139,250,0.10);
+  color: #a78bfa;
+  border: 1px solid rgba(167,139,250,0.22);
+}
+
+.badge-fiqh {
+  background: rgba(74,222,128,0.10);
+  color: #4ade80;
+  border: 1px solid rgba(74,222,128,0.22);
+}
+
+/* ── Ornement ── */
+.ornament-geometric {
+  opacity: 0.05;
+  pointer-events: none;
+}

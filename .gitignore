@@ -1,0 +1,28 @@
+# Env
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+.next/
+dist/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Corpus data (trop lourd pour git)
+packages/corpus/data/raw/
+packages/corpus/data/embeddings/
+
+# Misc
+.DS_Store
+*.log
+.turbo/

@@ -1,0 +1,16 @@
+{
+  "name": "akashic-search",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "dev:api": "cd apps/api && uvicorn main:app --reload --port 8000",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "migrate": "cd apps/api && python -m alembic upgrade head",
+    "ingest:quran": "cd packages/corpus && python ingest_quran.py",
+    "ingest:hadith": "cd packages/corpus && python ingest_hadith.py"
+  }
+}
