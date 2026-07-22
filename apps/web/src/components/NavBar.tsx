@@ -11,9 +11,14 @@ const NAV_LINKS = [
   { href: "/a-propos",      label: "À propos" },
 ]
 
-export default function NavBar() {
+interface NavBarProps {
+  transparentOnTop?: boolean
+}
+
+export default function NavBar({ transparentOnTop = false }: NavBarProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -31,16 +36,37 @@ export default function NavBar() {
     return () => { document.body.style.overflow = "" }
   }, [open])
 
+  useEffect(() => {
+    if (!transparentOnTop) return
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 60)
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [transparentOnTop])
+
   return (
     <>
       <header
-        className="sticky top-0 z-50"
-        style={{ background: "var(--color-bg)", borderBottom: "1px solid var(--color-border)" }}
+        className={transparentOnTop ? "fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" : "sticky top-0 z-50"}
+        style={{
+          background: transparentOnTop 
+            ? (scrolled ? "rgba(5, 13, 7, 0.88)" : "transparent") 
+            : "var(--color-bg)",
+          backdropFilter: transparentOnTop && scrolled ? "blur(12px)" : "none",
+          borderBottom: transparentOnTop
+            ? (scrolled ? "1px solid rgba(200, 157, 58, 0.2)" : "1px solid transparent")
+            : "1px solid var(--color-border)"
+        }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           {/* Gauche : Logo */}
-          <div className="flex-1 flex justify-start items-center">
+          <div 
+            className="flex-1 flex justify-start items-center transition-opacity duration-500"
+            style={{ opacity: transparentOnTop && !scrolled ? 0 : 1 }}
+          >
             <Link href="/" className="flex items-center gap-2 group">
               <img
                 src="/symbole_gold.png"
@@ -65,7 +91,9 @@ export default function NavBar() {
                 href={l.href}
                 className="text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[#C89D3A]"
                 style={{
-                  color: pathname.startsWith(l.href) ? "var(--color-gold)" : "var(--color-text-muted)",
+                  color: transparentOnTop && !scrolled
+                    ? "rgba(250, 247, 239, 0.65)"
+                    : (pathname.startsWith(l.href) ? "var(--color-gold)" : "var(--color-text-muted)"),
                   fontWeight: pathname.startsWith(l.href) ? 500 : 400,
                 }}
               >
@@ -79,7 +107,11 @@ export default function NavBar() {
             <Link
               href="/search"
               className="text-xs font-semibold px-5 py-2.5 rounded-full border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#C89D3A] hover:text-black uppercase tracking-wider hover:scale-105"
-              style={{ borderColor: "var(--color-gold)", color: "var(--color-gold)", background: "rgba(200, 157, 58, 0.1)" }}
+              style={{ 
+                borderColor: "var(--color-gold)", 
+                color: transparentOnTop && !scrolled ? "#B88A44" : "var(--color-gold)", 
+                background: transparentOnTop && !scrolled ? "rgba(250, 248, 245, 0.6)" : "rgba(200, 157, 58, 0.1)" 
+              }}
             >
               Rechercher →
             </Link>
@@ -91,7 +123,7 @@ export default function NavBar() {
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}
             className="md:hidden flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded-lg transition-colors"
-            style={{ color: "var(--color-text)" }}
+            style={{ color: transparentOnTop && !scrolled ? "#B88A44" : "var(--color-text)" }}
           >
             <span
               className="block w-5 h-px transition-all duration-300 origin-center"

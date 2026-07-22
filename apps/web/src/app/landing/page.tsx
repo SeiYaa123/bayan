@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Footer from "@/components/Footer"
+import NavBar from "@/components/NavBar"
 import { useBookmark } from "@/context/BookmarkContext"
 
 const SAMPLE_QUERIES = ["رحمة", "patience", "صبر", "justice", "توبة"]
@@ -123,66 +124,7 @@ export default function LandingPage() {
         </Link>
       </div>
 
-      {/* ── HEADER (Navbar transparente au départ, fond & logo apparaissent au scroll) ── */}
-      <header
-        className="fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-        style={{
-          background: scrolled ? "rgba(5, 13, 7, 0.88)" : "transparent",
-          backdropFilter: scrolled ? "blur(12px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(200,157,58,0.2)" : "1px solid transparent",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Gauche : Logo (Apparition au scroll) */}
-          <div className="flex-1 flex justify-start items-center">
-            {/* Logo placeholder layout to reserve space in navbar */}
-            <div className="h-11 md:h-13 w-36 opacity-0" />
-          </div>
-
-          {/* Centre : Menu Nav parfaitement centré */}
-          <nav className="hidden md:flex items-center justify-center gap-8 flex-1">
-            {[
-              { href: "/corpus",        label: "Corpus" },
-              { href: "/apprentissage", label: "Apprentissage" },
-              { href: "/favoris",       label: "Favoris" },
-              { href: "/a-propos",      label: "À propos" },
-            ].map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[#C89D3A]"
-                style={{ color: scrolled ? "var(--color-text-muted)" : "rgba(90, 79, 66, 0.9)" }}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Droite : Bouton d'action CTA */}
-          <div className="hidden md:flex flex-1 justify-end items-center">
-            <Link
-              href="/search"
-              className="text-xs font-semibold px-5 py-2.5 rounded-full border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#C89D3A] hover:text-black uppercase tracking-wider hover:scale-105"
-              style={{
-                borderColor: "var(--color-gold)",
-                color: scrolled ? "var(--color-gold)" : "#B88A44",
-                background: scrolled ? "rgba(200, 157, 58, 0.1)" : "rgba(250, 248, 245, 0.6)",
-              }}
-            >
-              Rechercher →
-            </Link>
-          </div>
-
-          {/* Mobile CTA */}
-          <Link
-            href="/search"
-            className="md:hidden text-xs px-3.5 py-1.5 rounded-full border font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-105"
-            style={{ borderColor: "var(--color-gold)", color: scrolled ? "var(--color-text)" : "#1A1714" }}
-          >
-            Recherche
-          </Link>
-        </div>
-      </header>
+      <NavBar transparentOnTop />
 
       <main>
         {/* ── HERO (FULLSCREEN 100VH) ── */}
