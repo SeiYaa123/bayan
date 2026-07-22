@@ -65,7 +65,10 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
           {/* Gauche : Logo */}
           <div 
             className="flex-1 flex justify-start items-center transition-opacity duration-500"
-            style={{ opacity: transparentOnTop && !scrolled ? 0 : 1 }}
+            style={{ 
+              opacity: transparentOnTop ? 0 : 1,
+              pointerEvents: transparentOnTop ? "none" : "auto"
+            }}
           >
             <Link href="/" className="flex items-center gap-2 group">
               <img
@@ -92,7 +95,7 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
                 className="text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[#C89D3A]"
                 style={{
                   color: transparentOnTop && !scrolled
-                    ? "rgba(250, 247, 239, 0.65)"
+                    ? "rgba(90, 79, 66, 0.9)"
                     : (pathname.startsWith(l.href) ? "var(--color-gold)" : "var(--color-text-muted)"),
                   fontWeight: pathname.startsWith(l.href) ? 500 : 400,
                 }}
