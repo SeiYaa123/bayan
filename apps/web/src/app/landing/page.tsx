@@ -143,7 +143,9 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center justify-center gap-8 flex-1">
             {[
               { href: "/corpus",        label: "Corpus" },
-              { href: "/apprentissage", label: "Ressources" },
+              { href: "/apprentissage", label: "Apprentissage" },
+              { href: "/favoris",       label: "Favoris" },
+              { href: "/a-propos",      label: "À propos" },
             ].map((l) => (
               <Link
                 key={l.href}
