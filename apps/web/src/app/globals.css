@@ -10,17 +10,17 @@
   --color-gold:         #C89D3A;
   --color-gold-light:   #e8c56a;
 
-  /* ── Dark cinematic theme ── */
-  --color-forest:       #0D3B2E;
-  --color-forest-dark:  #081f19;
-  --color-forest-soft:  rgba(200,157,58,0.08);
-  --color-bg:           #050d07;
-  --color-surface:      #0b1a0d;
-  --color-surface-2:    #0e2010;
-  --color-border:       rgba(250,247,239,0.08);
-  --color-border-soft:  rgba(250,247,239,0.05);
+  /* ── Obsidian luxury theme ── */
+  --color-forest:       #121212;
+  --color-forest-dark:  #080808;
+  --color-forest-soft:  rgba(200,157,58,0.06);
+  --color-bg:           #060606;
+  --color-surface:      #0e0e0e;
+  --color-surface-2:    #161616;
+  --color-border:       rgba(200,157,58,0.12);
+  --color-border-soft:  rgba(200,157,58,0.06);
   --color-text:         #FAF7EF;
-  --color-text-muted:   rgba(250,247,239,0.45);
+  --color-text-muted:   rgba(250,247,239,0.55);
   --color-accent:       #C89D3A;
   --color-sage:         #C89D3A;
 }
@@ -35,16 +35,54 @@
 * { box-sizing: border-box; }
 
 body {
-  background: var(--color-bg);
+  background: radial-gradient(circle at center, rgba(30, 27, 23, 0.45) 0%, #060606 100%);
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* ── Typographie ── */
 h1, h2, h3, h4, h5, h6, .font-serif {
   font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 0.03em;
 }
+
+h1 {
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+h2 {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+/* ── Premium Utilities ── */
+.glass-card {
+  background: rgba(14, 14, 14, 0.65) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(200, 157, 58, 0.15) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.glass-card:hover {
+  border-color: rgba(200, 157, 58, 0.35) !important;
+  box-shadow: 0 12px 40px 0 rgba(200, 157, 58, 0.08), 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+.gold-glow {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.gold-glow:hover {
+  box-shadow: 0 0 20px 2px rgba(200, 157, 58, 0.12) !important;
+  border-color: rgba(200, 157, 58, 0.35) !important;
+}
+
 
 /* ── Texte arabe ── */
 .arabic-interface {
@@ -166,11 +204,7 @@ h1, h2, h3, h4, h5, h6, .font-serif {
   border: 1px solid rgba(167,139,250,0.22);
 }
 
-.badge-fiqh {
-  background: rgba(74,222,128,0.10);
-  color: #4ade80;
-  border: 1px solid rgba(74,222,128,0.22);
-}
+
 
 /* ── Ornement ── */
 .ornament-geometric {

@@ -1,40 +1,45 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist } from "next/font/google"
 import "./globals.css"
+import { AudioProvider } from "@/context/AudioContext"
+import { BookmarkProvider } from "@/context/BookmarkContext"
+import AudioPlayer from "@/components/AudioPlayer"
+import PwaRegister from "@/components/PwaRegister"
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://bayansearch.com"
 
-export const viewport = {
+export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#050d07",
 }
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "Bayān — Moteur de recherche islamique sémantique",
+    default: "Bayān — Recherche Sémantique Islamique",
     template: "%s | Bayān",
   },
   description:
-    "Explorez le Coran, 60 000+ hadiths, le tafsir Ibn Kathir et les 4 madhhabs grâce à la recherche sémantique en arabe, français et anglais.",
+    "Explorez le Coran, 60 000+ hadiths et le tafsir Ibn Kathir grâce à la recherche sémantique en arabe, français et anglais.",
   keywords: [
     "recherche islamique",
     "coran",
     "hadith",
     "tafsir",
-    "fiqh",
-    "madhhab",
     "NLP arabe",
-    "moteur de recherche",
+    "moteur de recherche sémantique",
+    "Bayān",
   ],
   authors: [{ name: "Bayān" }],
   creator: "Bayān",
+  publisher: "Bayān",
   openGraph: {
-    title: "Bayān — Moteur de recherche islamique sémantique",
+    title: "Bayān — Recherche Sémantique Islamique",
     description:
-      "Recherche sémantique sur le Coran, 60 000+ hadiths, tafsir et fiqh. En arabe, français et anglais.",
+      "Explorez le Coran, 60 000+ hadiths et le tafsir Ibn Kathir grâce à la recherche sémantique en arabe, français et anglais.",
     url: BASE_URL,
     siteName: "Bayān",
     type: "website",
@@ -44,14 +49,14 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Bayān — Corpus Islamique",
+        alt: "Bayān — Recherche Sémantique Islamique",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bayān",
-    description: "Moteur de recherche sémantique sur le corpus islamique",
+    title: "Bayān — Recherche Sémantique Islamique",
+    description: "Explorez le Coran, 60 000+ hadiths et le tafsir Ibn Kathir.",
     images: ["/opengraph-image"],
   },
   robots: {
@@ -72,7 +77,7 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
     "apple-mobile-web-app-title": "Bayān",
-    "theme-color": "#C89D3A",
+    "theme-color": "#050d07",
   },
 }
 
@@ -85,7 +90,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <BookmarkProvider>
+          <AudioProvider>
+            {children}
+            <AudioPlayer />
+            <PwaRegister />
+          </AudioProvider>
+        </BookmarkProvider>
+      </body>
     </html>
   )
 }

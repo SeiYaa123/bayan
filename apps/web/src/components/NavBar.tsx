@@ -5,11 +5,10 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 const NAV_LINKS = [
-  { href: "/search",        label: "Recherche" },
   { href: "/corpus",        label: "Corpus" },
-  { href: "/apprentissage", label: "Apprendre" },
-  { href: "/fiqh/compare",  label: "Fiqh" },
-  { href: "/evolution",     label: "Évolution" },
+  { href: "/apprentissage", label: "Apprentissage" },
+  { href: "/favoris",       label: "Favoris" },
+  { href: "/a-propos",      label: "À propos" },
 ]
 
 export default function NavBar() {
@@ -38,44 +37,33 @@ export default function NavBar() {
         className="sticky top-0 z-50"
         style={{ background: "var(--color-bg)", borderBottom: "1px solid var(--color-border)" }}
       >
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <span
-              dir="rtl"
-              style={{
-                fontFamily: "'Amiri', serif",
-                fontSize: "1.65rem",
-                fontWeight: 700,
-                color: "var(--color-gold)",
-                lineHeight: 1,
-              }}
-            >
-              بيان
-            </span>
-            <span style={{ width: "1px", height: "1.1rem", background: "rgba(200,157,58,0.35)" }} />
-            <span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "0.85rem",
-                fontWeight: 500,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: "var(--color-text-muted)",
-              }}
-            >
-              Bayān
-            </span>
-          </Link>
+          {/* Gauche : Logo */}
+          <div className="flex-1 flex justify-start items-center">
+            <Link href="/" className="flex items-center gap-2 group">
+              <img
+                src="/symbole_gold.png"
+                alt="Bayran Symbole"
+                className="h-9.5 md:h-11 w-auto object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+              />
+              <span className="text-[#C89D3A] text-[7px] md:text-[8px] self-center select-none opacity-85 mx-0.5" style={{ transform: "translateY(-0.8px)" }}>◆</span>
+              <img
+                src="/bayran_text.png"
+                alt="Bayran Logo"
+                className="h-4.5 md:h-5 w-auto object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                style={{ transform: "translateY(0.8px)" }}
+              />
+            </Link>
+          </div>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Centre : Menu centré */}
+          <nav className="hidden md:flex items-center justify-center gap-8 flex-1">
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-sm transition-colors hover:text-[#C89D3A]"
+                className="text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[#C89D3A]"
                 style={{
                   color: pathname.startsWith(l.href) ? "var(--color-gold)" : "var(--color-text-muted)",
                   fontWeight: pathname.startsWith(l.href) ? 500 : 400,
@@ -84,14 +72,18 @@ export default function NavBar() {
                 {l.label}
               </Link>
             ))}
+          </nav>
+
+          {/* Droite : Bouton CTA */}
+          <div className="hidden md:flex flex-1 justify-end items-center">
             <Link
               href="/search"
-              className="text-sm px-5 py-2 rounded-lg border transition-colors hover:bg-[#C89D3A]/10"
-              style={{ borderColor: "var(--color-gold)", color: "var(--color-text)" }}
+              className="text-xs font-semibold px-5 py-2.5 rounded-full border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#C89D3A] hover:text-black uppercase tracking-wider hover:scale-105"
+              style={{ borderColor: "var(--color-gold)", color: "var(--color-gold)", background: "rgba(200, 157, 58, 0.1)" }}
             >
-              Commencer
+              Rechercher →
             </Link>
-          </nav>
+          </div>
 
           {/* Mobile: hamburger */}
           <button
@@ -149,25 +141,20 @@ export default function NavBar() {
           className="flex items-center justify-between px-6 py-5"
           style={{ borderBottom: "1px solid var(--color-border)" }}
         >
-          <span
-            dir="rtl"
-            style={{
-              fontFamily: "'Amiri', serif",
-              fontSize: "1.5rem",
-              fontWeight: 700,
-              color: "var(--color-gold)",
-              lineHeight: 1,
-            }}
-          >
-            بيان
-          </span>
+          <img
+            src="/symbole_gold.png"
+            alt="Bayran Logo"
+            className="h-10 w-auto object-contain"
+          />
           <button
             onClick={() => setOpen(false)}
             aria-label="Fermer"
             className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-white/5"
             style={{ color: "var(--color-text-muted)" }}
           >
-            ✕
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 

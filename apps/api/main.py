@@ -5,7 +5,7 @@ from redis.asyncio import Redis
 from config import settings
 from logging_config import configure_logging, get_logger
 from middleware.request_logging import RequestLoggingMiddleware
-from routers import search, texts, roots, fiqh, isnad, semantic_evolution, admin, corpus
+from routers import search, texts, roots, isnad, admin, corpus
 
 configure_logging(level=settings.log_level)
 logger = get_logger("startup")
@@ -46,9 +46,7 @@ app.add_middleware(
 app.include_router(search.router,             prefix="/api")
 app.include_router(texts.router,              prefix="/api")
 app.include_router(roots.router,              prefix="/api")
-app.include_router(fiqh.router,               prefix="/api")
 app.include_router(isnad.router,              prefix="/api")
-app.include_router(semantic_evolution.router, prefix="/api")
 app.include_router(admin.router,              prefix="/api")
 app.include_router(corpus.router,            prefix="/api")
 

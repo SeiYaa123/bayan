@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import ResultCard from "./ResultCard"
 import type { SearchResult } from "@/lib/api"
+import { AudioProvider } from "@/context/AudioContext"
 
 jest.mock("next/navigation", () => ({
   useRouter() {
@@ -29,60 +30,87 @@ function make(overrides: Partial<SearchResult> = {}): SearchResult {
   return { ...BASE, ...overrides }
 }
 
+import { BookmarkProvider } from "@/context/BookmarkContext"
+
+function renderWithAudio(ui: React.ReactElement) {
+  return render(
+    <BookmarkProvider>
+      <AudioProvider>{ui}</AudioProvider>
+    </BookmarkProvider>
+  )
+}
+
 describe("ResultCard", () => {
   test("renders the reference", () => {
-    render(<ResultCard result={make()} />)
+    renderWithAudio(<ResultCard result={make()} />)
     expect(screen.getByText("2:255")).toBeInTheDocument()
   })
 
-  test("renders Arabic text", () => {
-    render(<ResultCard result={make()} />)
-    expect(screen.getByText(BASE.arabic)).toBeInTheDocument()
+  test("renders Arabic text and root analyzer button", () => {
+    renderWithAudio(<ResultCard result={make()} />)
+    expect(screen.getByText(/اللَّهُ/)).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /Analyser la racine/i })).toBeInTheDocument()
   })
 
   test("renders French translation when available", () => {
-    render(<ResultCard result={make()} />)
+    renderWithAudio(<ResultCard result={make()} />)
     expect(screen.getByText("Allah — il n'y a de divinité que Lui.")).toBeInTheDocument()
   })
 
   test("falls back to English when French is absent", () => {
-    render(<ResultCard result={make({ translation_fr: null, translation_en: "No god but Him." })} />)
+    renderWithAudio(<ResultCard result={make({ translation_fr: null, translation_en: "No god but Him." })} />)
     expect(screen.getByText("No god but Him.")).toBeInTheDocument()
   })
 
   test("hides translation section when both translations are null", () => {
-    render(<ResultCard result={make({ translation_fr: null, translation_en: null })} />)
+    renderWithAudio(<ResultCard result={make({ translation_fr: null, translation_en: null })} />)
     expect(screen.queryByText(/Allah/)).not.toBeInTheDocument()
   })
 
   test("shows semantic match badge", () => {
-    render(<ResultCard result={make({ match_type: "semantic" })} />)
+    renderWithAudio(<ResultCard result={make({ match_type: "semantic" })} />)
     expect(screen.getByText("Sémantique")).toBeInTheDocument()
   })
 
   test("shows keyword match badge", () => {
-    render(<ResultCard result={make({ match_type: "keyword" })} />)
+    renderWithAudio(<ResultCard result={make({ match_type: "keyword" })} />)
     expect(screen.getByText("Mot-clé")).toBeInTheDocument()
   })
 
   test("shows hybrid match badge", () => {
-    render(<ResultCard result={make({ match_type: "hybrid" })} />)
+    renderWithAudio(<ResultCard result={make({ match_type: "hybrid" })} />)
     expect(screen.getByText("Hybride")).toBeInTheDocument()
   })
 
   test("renders collection label for bukhari", () => {
-    render(<ResultCard result={make({ source_type: "hadith", collection: "bukhari" })} />)
+    renderWithAudio(<ResultCard result={make({ source_type: "hadith", collection: "bukhari" })} />)
     expect(screen.getByText(/Sahih Bukhari/)).toBeInTheDocument()
   })
 
   test("renders unknown collection as-is", () => {
-    render(<ResultCard result={make({ collection: "custom_corpus" })} />)
+    renderWithAudio(<ResultCard result={make({ collection: "custom_corpus" })} />)
     expect(screen.getByText(/custom_corpus/)).toBeInTheDocument()
   })
 
   test("connexions link points to /text/:id", () => {
-    render(<ResultCard result={make()} />)
-    const link = screen.getByRole("link", { name: /connexions/i })
+    renderWithAudio(<ResultCard result={make()} />)
+    const link = screen.getByRole("link", { name: /textes associés/i })
     expect(link).toHaveAttribute("href", "/text/abc-123")
   })
+
+  test("renders play recitation button for quran results", () => {
+    renderWithAudio(<ResultCard result={make()} />)
+    expect(screen.getByRole("button", { name: /Écouter la récitation/i })).toBeInTheDocument()
+  })
+
+  test("renders bookmark toggle button", () => {
+    renderWithAudio(<ResultCard result={make()} />)
+    expect(screen.getByRole("button", { name: /Ajouter aux favoris/i })).toBeInTheDocument()
+  })
+
+  test("renders share card button", () => {
+    renderWithAudio(<ResultCard result={make()} />)
+    expect(screen.getByRole("button", { name: /Générer une carte/i })).toBeInTheDocument()
+  })
 })
+

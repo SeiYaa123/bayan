@@ -37,13 +37,17 @@ export default function SearchContent() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const offsetRef = useRef(0)
   const currentQueryRef = useRef(initialQuery)
+  const lastSearchedRef = useRef({ q: "", types: [] as string[] })
 
   const pushUrl = useCallback((q: string, types: string[]) => {
     const params = new URLSearchParams()
     if (q) params.set("q", q)
     types.forEach((t) => params.append("types", t))
     const qs = params.toString()
-    router.replace(`/search${qs ? `?${qs}` : ""}`, { scroll: false })
+    const targetUrl = `/search${qs ? `?${qs}` : ""}`
+    if (typeof window !== "undefined" && window.location.search !== (qs ? `?${qs}` : "")) {
+      router.replace(targetUrl, { scroll: false })
+    }
   }, [router])
 
   const runSearch = useCallback(async (q: string, types: string[]) => {
@@ -56,6 +60,7 @@ export default function SearchContent() {
     setTotal(0)
     offsetRef.current = 0
     currentQueryRef.current = q
+    lastSearchedRef.current = { q, types }
     addToHistory(q)
     pushUrl(q, types)
     try {
@@ -72,11 +77,15 @@ export default function SearchContent() {
   }, [pushUrl])
 
   useEffect(() => {
-    if (initialQuery) {
-      const timer = setTimeout(() => {
-        runSearch(initialQuery, initialTypes)
-      }, 0)
-      return () => clearTimeout(timer)
+    const serializedTypes = initialTypes.join(",")
+    const lastSerializedTypes = lastSearchedRef.current.types.join(",")
+
+    if (
+      initialQuery &&
+      (initialQuery !== lastSearchedRef.current.q || serializedTypes !== lastSerializedTypes)
+    ) {
+      lastSearchedRef.current = { q: initialQuery, types: initialTypes }
+      runSearch(initialQuery, initialTypes)
     }
   }, [initialQuery, initialTypes, runSearch])
 
@@ -146,8 +155,8 @@ export default function SearchContent() {
           background: "var(--color-surface-2)",
           borderColor: "var(--color-border)",
           position: "sticky",
-          top: "57px",
-          height: "calc(100vh - 57px)",
+          top: "80px",
+          height: "calc(100vh - 80px)",
           overflowY: "auto",
         }}
       >
@@ -158,7 +167,7 @@ export default function SearchContent() {
       <main className="flex-1 min-w-0" style={{ background: "var(--color-bg)" }}>
         {/* En-tête compact avec recherche */}
         <div
-          className="sticky top-[57px] z-10 border-b"
+          className="sticky top-20 z-10 border-b"
           style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
         >
           <div className="px-6 py-4 flex items-center gap-3">

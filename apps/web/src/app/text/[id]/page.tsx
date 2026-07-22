@@ -1,12 +1,20 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { getTextWithConnections, getIsnad } from "@/lib/api"
 import ConnectionGraph from "@/components/ConnectionGraph"
 import IsnadChain from "@/components/IsnadChain"
 import BackLink from "@/components/BackLink"
+import { parseQuranReference } from "@/context/AudioContext"
+import AudioPlayButton from "@/components/AudioPlayButton"
+
+import TextDetailActions from "@/components/TextDetailActions"
+import InteractiveArabicText from "@/components/InteractiveArabicText"
 
 interface Props {
   params: Promise<{ id: string }>
 }
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://bayansearch.com"
 
 const COLLECTION_LABELS: Record<string, string> = {
   quran:     "Coran",
@@ -18,10 +26,58 @@ const COLLECTION_LABELS: Record<string, string> = {
   ibn_majah: "Sunan Ibn Majah",
   ibn_kathir:"Tafsir Ibn Kathir",
   tabari:    "Tafsir al-Tabari",
-  hanafi:    "Fiqh Hanafi",
-  maliki:    "Fiqh Maliki",
-  shafi_i:   "Fiqh Shafi'i",
-  hanbali:   "Fiqh Hanbali",
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  try {
+    const data = await getTextWithConnections(id)
+    if (!data) return {}
+
+    const collectionLabel = COLLECTION_LABELS[data.collection as string] ?? data.collection
+    const ref = (data.reference as string) ?? ""
+    const title = `${collectionLabel} (${ref})`
+    const snippet = ((data.collection === "ibn_kathir" ? (data.translation_en ?? data.translation_fr ?? data.arabic) : (data.translation_fr ?? data.translation_en ?? data.arabic)) as string) ?? ""
+    const cleanSnippet = snippet.replace(/\s+/g, " ").trim()
+    const description = cleanSnippet.length > 160 ? `${cleanSnippet.slice(0, 157)}...` : cleanSnippet
+
+    const pageUrl = `${BASE_URL}/text/${id}`
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title: `${title} | Bayān`,
+        description,
+        url: pageUrl,
+        siteName: "Bayān",
+        type: "article",
+        locale: "fr_FR",
+        images: [
+          {
+            url: "/opengraph-image",
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${title} | Bayān`,
+        description,
+        images: ["/opengraph-image"],
+      },
+      alternates: {
+        canonical: pageUrl,
+      },
+    }
+  } catch {
+    return {
+      title: "Texte",
+      description: "Consulter le texte du corpus islamique sur Bayān.",
+    }
+  }
 }
 
 export default async function TextDetailPage({ params }: Props) {
@@ -105,6 +161,7 @@ export default async function TextDetailPage({ params }: Props) {
   const { connections = [], ...text } = data
   const isHadith = text.source_type === "hadith"
   const collectionLabel = COLLECTION_LABELS[text.collection as string] ?? text.collection
+  const quranRef = text.source_type === "quran" ? parseQuranReference(text.reference as string, text.metadata as Record<string, unknown> | undefined) : null
 
   const isnad = isHadith ? await getIsnad(id).catch(() => null) : null
 
@@ -117,17 +174,46 @@ export default async function TextDetailPage({ params }: Props) {
       >
         <div className="max-w-5xl mx-auto flex items-center gap-4">
           <BackLink light />
-          <div className="flex items-center gap-2">
-            <span className={`badge-${text.source_type} text-xs px-2 py-0.5 rounded-full font-medium`}>
-              {text.source_type === "quran"  && "📖 "}
-              {text.source_type === "hadith" && "📜 "}
-              {text.source_type === "tafsir" && "🔍 "}
-              {text.source_type === "fiqh"   && "⚖️ "}
+          <div className="flex items-center gap-2 flex-1">
+            <span className={`badge-${text.source_type} text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1.5`}>
+              {text.source_type === "quran" && (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              )}
+              {text.source_type === "hadith" && (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              )}
+              {text.source_type === "tafsir" && (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              )}
               {collectionLabel}
             </span>
             <span className="text-xs font-mono" style={{ color: "var(--color-text-muted)" }}>
               {text.reference as string}
             </span>
+            <div className="ml-auto flex items-center gap-3">
+              {quranRef && (
+                <AudioPlayButton
+                  surah={quranRef.surah}
+                  ayah={quranRef.ayah}
+                  arabicText={text.arabic as string}
+                  variant="badge"
+                />
+              )}
+              <TextDetailActions
+                id={id}
+                source_type={text.source_type as "quran" | "hadith" | "tafsir"}
+                reference={text.reference as string}
+                collection={text.collection as string}
+                arabic={text.arabic as string}
+                translation={(text.collection === "ibn_kathir" ? (text.translation_en ?? text.translation_fr) : (text.translation_fr ?? text.translation_en)) as string | undefined}
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -136,14 +222,30 @@ export default async function TextDetailPage({ params }: Props) {
         {/* Texte + connexions (liste) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <section className="flex flex-col gap-6">
+            {/* Audio Play Option for Quran */}
+            {quranRef && (
+              <div className="flex items-center justify-between p-4 rounded-xl border" style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}>
+                <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                  Récitation Audio
+                </span>
+                <AudioPlayButton
+                  surah={quranRef.surah}
+                  ayah={quranRef.ayah}
+                  arabicText={text.arabic as string}
+                  variant="button"
+                />
+              </div>
+            )}
+
             {/* Texte arabe */}
             <div
               className="rounded-xl p-6 border"
               style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
             >
-              <p className="arabic-lg leading-relaxed" style={{ color: "var(--color-gold)" }}>
-                {text.arabic as string}
-              </p>
+              <InteractiveArabicText
+                arabicText={text.arabic as string}
+                showAnalyzeButton={false}
+              />
             </div>
 
             {/* Traduction */}
@@ -153,7 +255,7 @@ export default async function TextDetailPage({ params }: Props) {
                 style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
               >
                 <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-                  {(text.translation_fr ?? text.translation_en) as string}
+                  {(text.collection === "ibn_kathir" ? (text.translation_en ?? text.translation_fr) : (text.translation_fr ?? text.translation_en)) as string}
                 </p>
               </div>
             )}

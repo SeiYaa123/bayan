@@ -1,5 +1,9 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Footer from "@/components/Footer"
+import { useBookmark } from "@/context/BookmarkContext"
 
 const SAMPLE_QUERIES = ["رحمة", "patience", "صبر", "justice", "توبة"]
 
@@ -7,7 +11,6 @@ const TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> 
   Coran:  { bg: "rgba(200,157,58,0.10)",  text: "#C89D3A", border: "rgba(200,157,58,0.22)"  },
   Hadith: { bg: "rgba(96,165,250,0.10)",  text: "#60a5fa", border: "rgba(96,165,250,0.22)"  },
   Tafsir: { bg: "rgba(167,139,250,0.10)", text: "#a78bfa", border: "rgba(167,139,250,0.22)" },
-  Fiqh:   { bg: "rgba(74,222,128,0.10)",  text: "#4ade80", border: "rgba(74,222,128,0.22)"  },
 }
 
 const MOCK_RESULTS = [
@@ -41,78 +44,138 @@ const MOCK_RESULTS = [
     type: "Tafsir",
     searchQ: "رحمة تفسير",
   },
-  {
-    idx: "04",
-    ref: "fiqh:qawa'id:2",
-    surah: "Qawâ'id fiqhiyya",
-    arabic: "الْمَشَقَّةُ تَجْلِبُ التَّيْسِيرَ",
-    fr: "La difficulté appelle l'allègement.",
-    highlight: "miséricorde",
-    type: "Fiqh",
-    searchQ: "رحمة فقه",
-  },
 ]
 
 
 export default function LandingPage() {
+  const [scrolled, setScrolled] = useState(false)
+  const { toggleBookmark, isBookmarked } = useBookmark()
+  const [dailyData, setDailyData] = useState<{
+    ayah: { id: string; reference: string; arabic: string; translation_fr: string; surah_name: string; surah_num: string }
+    hadith: { id: string; reference: string; collection: string; arabic: string; translation_fr: string }
+  } | null>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 60)
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
+    // Fetch daily verse & hadith
+    fetch("/api/daily")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setDailyData(data)
+        }
+      })
+      .catch((e) => console.error(e))
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
     <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif", background: "var(--color-bg)" }}>
 
-      {/* ── HEADER ── */}
-      <header className="sticky top-0 z-50" style={{ background: "var(--color-bg)", borderBottom: "1px solid var(--color-border)" }}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span
-              dir="rtl"
-              style={{ fontFamily: "'Amiri', serif", fontSize: "1.75rem", fontWeight: 700, color: "var(--color-gold)", lineHeight: 1 }}
-            >
-              بيان
-            </span>
-            <span style={{ width: "1px", height: "1.2rem", background: "rgba(200,157,58,0.35)" }} />
-            <span
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "0.9rem",
-                fontWeight: 500,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: "var(--color-text-muted)",
-              }}
-            >
-              Bayān
-            </span>
-          </Link>
+      {/* Moving Logo & Calligraphy Animating on Scroll */}
+      <div className="fixed inset-x-0 top-0 z-[60] max-w-7xl mx-auto px-6 h-20 pointer-events-none flex items-center justify-start">
+        <Link
+          href="/"
+          className="transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-center pointer-events-auto"
+          style={{
+            position: scrolled ? "relative" : "absolute",
+            left: scrolled ? "0" : "50%",
+            top: scrolled ? "0" : "18vh",
+            transform: scrolled
+              ? "translateX(0) scale(0.42)"
+              : "translateX(-50%) scale(1)",
+            transformOrigin: scrolled ? "center left" : "center center",
+          }}
+        >
+          <img
+            src="/symbole_gold.png"
+            alt="Emblème"
+            className="h-28 md:h-36 w-auto object-contain transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{
+              height: scrolled ? "96px" : "140px",
+            }}
+          />
+          <span
+            className="text-[#C89D3A] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none opacity-80"
+            style={{
+              fontSize: scrolled ? "16px" : "28px",
+              marginLeft: scrolled ? "4px" : "12px",
+              marginRight: scrolled ? "4px" : "12px",
+              transform: scrolled ? "translateY(-0.5px)" : "translateY(-1px)",
+            }}
+          >
+            ◆
+          </span>
+          <img
+            src="/bayran_text.png"
+            alt="Bayran"
+            className="h-9 md:h-11 w-auto object-contain transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{
+              height: scrolled ? "36px" : "50px",
+              transform: scrolled ? "translateY(0.8px)" : "translateY(1.5px)",
+            }}
+          />
+        </Link>
+      </div>
 
-          <nav className="hidden md:flex items-center gap-8">
+      {/* ── HEADER (Navbar transparente au départ, fond & logo apparaissent au scroll) ── */}
+      <header
+        className="fixed top-0 inset-x-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{
+          background: scrolled ? "rgba(5, 13, 7, 0.88)" : "transparent",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(200,157,58,0.2)" : "1px solid transparent",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Gauche : Logo (Apparition au scroll) */}
+          <div className="flex-1 flex justify-start items-center">
+            {/* Logo placeholder layout to reserve space in navbar */}
+            <div className="h-11 md:h-13 w-36 opacity-0" />
+          </div>
+
+          {/* Centre : Menu Nav parfaitement centré */}
+          <nav className="hidden md:flex items-center justify-center gap-8 flex-1">
             {[
-              { href: "/search",        label: "Recherche" },
               { href: "/corpus",        label: "Corpus" },
-              { href: "/apprentissage", label: "Apprendre" },
-              { href: "/fiqh/compare",  label: "Fiqh" },
-              { href: "/evolution",     label: "Évolution" },
+              { href: "/apprentissage", label: "Ressources" },
             ].map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className="text-sm transition-colors hover:text-[#C89D3A]"
-                style={{ color: "var(--color-text-muted)" }}
+                className="text-sm font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:text-[#C89D3A]"
+                style={{ color: scrolled ? "var(--color-text-muted)" : "rgba(90, 79, 66, 0.9)" }}
               >
                 {l.label}
               </Link>
             ))}
-            <Link
-              href="/search"
-              className="text-sm px-5 py-2 rounded-lg border transition-colors hover:bg-[#C89D3A]/10"
-              style={{ borderColor: "var(--color-gold)", color: "var(--color-text)" }}
-            >
-              Commencer
-            </Link>
           </nav>
 
+          {/* Droite : Bouton d'action CTA */}
+          <div className="hidden md:flex flex-1 justify-end items-center">
+            <Link
+              href="/search"
+              className="text-xs font-semibold px-5 py-2.5 rounded-full border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#C89D3A] hover:text-black uppercase tracking-wider hover:scale-105"
+              style={{
+                borderColor: "var(--color-gold)",
+                color: scrolled ? "var(--color-gold)" : "#B88A44",
+                background: scrolled ? "rgba(200, 157, 58, 0.1)" : "rgba(250, 248, 245, 0.6)",
+              }}
+            >
+              Rechercher →
+            </Link>
+          </div>
+
+          {/* Mobile CTA */}
           <Link
             href="/search"
-            className="md:hidden text-sm px-4 py-1.5 rounded-lg border"
-            style={{ borderColor: "var(--color-gold)", color: "var(--color-text)" }}
+            className="md:hidden text-xs px-3.5 py-1.5 rounded-full border font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-105"
+            style={{ borderColor: "var(--color-gold)", color: scrolled ? "var(--color-text)" : "#1A1714" }}
           >
             Recherche
           </Link>
@@ -120,164 +183,214 @@ export default function LandingPage() {
       </header>
 
       <main>
-        {/* ── HERO ── */}
+        {/* ── HERO (FULLSCREEN 100VH) ── */}
         <section
+          className="relative w-full min-h-screen flex flex-col justify-between items-center pt-24 pb-8 px-6 overflow-hidden bg-cover bg-center bg-no-repeat"
           style={{
-            background: "linear-gradient(to bottom, #030806 0%, #050d07 60%, #081811 100%)",
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-end",
+            backgroundImage: "url('/fondhero.png')",
           }}
         >
-          <div
-            style={{
-              maxWidth: "1400px",
-              width: "100%",
-              margin: "0 auto",
-              padding: "0 clamp(1.5rem, 5vw, 5rem) clamp(10rem, 20vw, 18rem)",
-            }}
-          >
-            {/* Marqueur arabe */}
-            <p
-              dir="rtl"
-              style={{
-                fontFamily: "'Amiri', serif",
-                fontSize: "1.5rem",
-                color: "#C89D3A",
-                marginBottom: "1.75rem",
-                lineHeight: 1,
-              }}
-            >
-              بيان
-            </p>
+          {/* Main Hero Content (Centré verticalement) */}
+          <div className="relative max-w-5xl mx-auto text-center z-10 my-auto w-full">
+            {/* Emblem spacer placeholder to maintain vertical layout alignment */}
+            <div className="h-[200px] mb-4 pointer-events-none opacity-0" />
 
-            {/* Titre cinématique — 2 lignes, pleine largeur */}
-            <h1
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontWeight: 300,
-                fontSize: "clamp(2.6rem, 8vw, 10rem)",
-                lineHeight: 0.92,
-                letterSpacing: "-0.025em",
-                color: "#FAF7EF",
-                marginBottom: "clamp(2rem, 4vw, 3.5rem)",
-              }}
-            >
-              Explorez le corpus<br />
-              <em style={{ fontStyle: "italic", color: "rgba(250,247,239,0.45)" }}>
-                islamique.
-              </em>
-            </h1>
 
-            {/* Ligne or + corpus */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1.25rem",
-                marginBottom: "clamp(2.5rem, 5vw, 4rem)",
-              }}
-            >
-              <div
-                style={{
-                  width: "2.5rem",
-                  height: "1px",
-                  background: "#C89D3A",
-                  flexShrink: 0,
-                }}
-              />
-              <p
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: "0.72rem",
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  color: "rgba(250,247,239,0.35)",
-                }}
-              >
-                Coran &nbsp;·&nbsp; Hadith &nbsp;·&nbsp; Tafsir &nbsp;·&nbsp; Fiqh
-              </p>
-            </div>
-
-            {/* Barre de recherche */}
+            {/* Barre de recherche centrale (Bulle arrondie) */}
             <form
               action="/search"
               method="GET"
-              style={{
-                maxWidth: "34rem",
-                marginBottom: "1.25rem",
-              }}
+              className="w-full max-w-2xl mx-auto bg-[#FAF8F5]/95 backdrop-blur-md p-2 pl-7 rounded-full shadow-2xl border border-[#D5C8B4] flex items-center gap-3 transition-all focus-within:border-[#B88A44] focus-within:ring-2 focus-within:ring-[#B88A44]/20"
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  background: "rgba(250,247,239,0.06)",
-                  border: "1px solid rgba(250,247,239,0.14)",
-                  borderRadius: "4px",
-                  overflow: "hidden",
-                }}
+              <input
+                name="q"
+                type="text"
+                placeholder="Rechercher un article, une vidéo, un thème..."
+                dir="auto"
+                className="flex-1 bg-transparent py-2.5 text-[#1A1714] placeholder-[#8C8275] outline-none text-sm md:text-base font-medium"
+              />
+              <button
+                type="submit"
+                aria-label="Rechercher"
+                className="w-11 h-11 rounded-full bg-[#B88A44] hover:bg-[#a07638] text-white flex items-center justify-center transition-all shadow-md shrink-0 cursor-pointer"
               >
-                <input
-                  name="q"
-                  type="text"
-                  placeholder="رحمة · miséricorde · mercy…"
-                  dir="auto"
-                  style={{
-                    flex: 1,
-                    background: "transparent",
-                    border: "none",
-                    outline: "none",
-                    padding: "1rem 1.25rem",
-                    fontSize: "0.9rem",
-                    color: "#FAF7EF",
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                />
-                <button
-                  type="submit"
-                  style={{
-                    background: "#C89D3A",
-                    color: "#050d07",
-                    border: "none",
-                    padding: "1rem 1.6rem",
-                    fontSize: "0.78rem",
-                    fontWeight: 700,
-                    letterSpacing: "0.1em",
-                    fontFamily: "'Inter', sans-serif",
-                    textTransform: "uppercase",
-                    cursor: "pointer",
-                    flexShrink: 0,
-                  }}
-                >
-                  →
-                </button>
-              </div>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
             </form>
 
-            {/* Suggestions */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+            {/* Suggestions de recherche rapide */}
+            <div className="mt-4 flex flex-wrap justify-center items-center gap-2">
+              <span className="text-xs text-[#6B6155] font-medium mr-1">Exemples :</span>
               {SAMPLE_QUERIES.map((q) => (
                 <Link
                   key={q}
                   href={`/search?q=${encodeURIComponent(q)}`}
-                  style={{
-                    border: "1px solid rgba(250,247,239,0.10)",
-                    color: "rgba(250,247,239,0.28)",
-                    borderRadius: "2px",
-                    padding: "0.2rem 0.7rem",
-                    fontSize: "0.72rem",
-                    fontFamily: "'Inter', sans-serif",
-                    letterSpacing: "0.04em",
-                  }}
+                  className="bg-white/60 hover:bg-white text-[#5A4F42] border border-[#D5C8B4] rounded-full px-3 py-1 text-xs transition-all shadow-sm"
                 >
                   {q}
                 </Link>
               ))}
             </div>
+
+
+          </div>
+
+          {/* Indication de Scroll (Animated mouse pill + indicator) */}
+          <div
+            className="relative z-10 flex flex-col items-center gap-1.5 transition-all duration-500 cursor-pointer mt-4"
+            style={{
+              opacity: scrolled ? 0 : 1,
+              transform: scrolled ? "translateY(20px)" : "translateY(0)",
+              pointerEvents: scrolled ? "none" : "auto",
+            }}
+            onClick={() => {
+              window.scrollTo({ top: window.innerHeight - 70, behavior: 'smooth' })
+            }}
+          >
+            <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-[#5A4F42]">
+              Explorer
+            </span>
+            <div className="w-6 h-10 rounded-full border-2 border-[#B88A44]/50 flex justify-center p-1 bg-white/30 backdrop-blur-xs">
+              <div className="w-1.5 h-3 bg-[#B88A44] rounded-full animate-bounce mt-1" />
+            </div>
           </div>
         </section>
+
+        {/* ── SECTION DÉCOUVERTE DU JOUR (Verset & Hadith) ── */}
+        {dailyData && (
+          <section className="relative max-w-7xl mx-auto px-6 py-16 border-t" style={{ borderColor: "rgba(250,247,239,0.06)" }}>
+            <div className="text-center space-y-2 mb-12">
+              <span className="text-xs font-semibold uppercase tracking-widest text-amber-200/50">
+                Méditation Quotidienne
+              </span>
+              <h2 className="text-2xl md:text-3xl font-light text-white" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                Mis en avant aujourd&apos;hui
+              </h2>
+              <div className="w-10 h-0.5 bg-amber-500/30 mx-auto" />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Card 1: Verset du Jour */}
+              <div 
+                className="p-8 rounded-xl border flex flex-col justify-between gap-6 transition-all hover:border-amber-500/20"
+                style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded border border-amber-500/20 bg-amber-500/10 text-amber-300 uppercase tracking-wider font-semibold">
+                      Coran
+                    </span>
+                    <span className="text-xs font-medium text-white/80">
+                      Sourate {dailyData.ayah.surah_name} ({dailyData.ayah.surah_num})
+                    </span>
+                  </div>
+                  
+                  <button
+                    onClick={() => toggleBookmark({
+                      id: dailyData.ayah.id,
+                      source_type: "quran",
+                      reference: dailyData.ayah.reference,
+                      arabic: dailyData.ayah.arabic,
+                      translation: dailyData.ayah.translation_fr
+                    })}
+                    className="p-1.5 rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
+                    title={isBookmarked(dailyData.ayah.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    style={{ color: isBookmarked(dailyData.ayah.id) ? "var(--color-gold)" : "var(--color-text-muted)" }}
+                  >
+                    <svg className="w-4 h-4" fill={isBookmarked(dailyData.ayah.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                    </svg>
+                  </button>
+                </div>
+
+                <p 
+                  dir="rtl" 
+                  className="text-2xl sm:text-3xl leading-loose text-right text-amber-100 font-serif"
+                  style={{ fontFamily: "'Amiri', serif" }}
+                >
+                  {dailyData.ayah.arabic}
+                </p>
+
+                <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+                  {dailyData.ayah.translation_fr}
+                </p>
+
+                <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: "var(--color-border-soft)" }}>
+                  <span className="text-xs font-mono" style={{ color: "var(--color-text-muted)" }}>
+                    Verset {dailyData.ayah.reference}
+                  </span>
+                  <Link
+                    href={`/corpus/quran/${dailyData.ayah.surah_num}#ayah-${dailyData.ayah.reference.split(":")[1]}`}
+                    className="text-xs font-semibold text-amber-300 hover:text-amber-200 transition-colors"
+                  >
+                    Lire dans la sourate →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Card 2: Hadith du Jour */}
+              <div 
+                className="p-8 rounded-xl border flex flex-col justify-between gap-6 transition-all hover:border-amber-500/20"
+                style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded border border-blue-500/20 bg-blue-500/10 text-blue-300 uppercase tracking-wider font-semibold">
+                      Hadith
+                    </span>
+                    <span className="text-xs font-medium text-white/80">
+                      Recueil : {dailyData.hadith.collection}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => toggleBookmark({
+                      id: dailyData.hadith.id,
+                      source_type: "hadith",
+                      reference: dailyData.hadith.reference,
+                      collection: dailyData.hadith.collection,
+                      arabic: dailyData.hadith.arabic,
+                      translation: dailyData.hadith.translation_fr
+                    })}
+                    className="p-1.5 rounded-lg border border-white/10 hover:bg-white/5 transition-colors"
+                    title={isBookmarked(dailyData.hadith.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                    style={{ color: isBookmarked(dailyData.hadith.id) ? "var(--color-gold)" : "var(--color-text-muted)" }}
+                  >
+                    <svg className="w-4 h-4" fill={isBookmarked(dailyData.hadith.id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                    </svg>
+                  </button>
+                </div>
+
+                <p 
+                  dir="rtl" 
+                  className="text-xl sm:text-2xl leading-loose text-right text-amber-100 font-serif"
+                  style={{ fontFamily: "'Amiri', serif" }}
+                >
+                  {dailyData.hadith.arabic}
+                </p>
+
+                <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+                  {dailyData.hadith.translation_fr}
+                </p>
+
+                <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: "var(--color-border-soft)" }}>
+                  <span className="text-xs font-mono" style={{ color: "var(--color-text-muted)" }}>
+                    Référence : {dailyData.hadith.reference}
+                  </span>
+                  <Link
+                    href={`/corpus/hadith/${dailyData.hadith.collection}`}
+                    className="text-xs font-semibold text-amber-300 hover:text-amber-200 transition-colors"
+                  >
+                    Parcourir le recueil →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* ── ZONE DE RÉSULTATS (démo) ── */}
         <section style={{ borderTop: "1px solid rgba(250,247,239,0.06)" }}>
@@ -295,15 +408,15 @@ export default function LandingPage() {
 
                 <nav className="space-y-0.5">
                   {[
-                    { name: "Tout le corpus", count: "66 000+", active: true },
-                    { name: "Coran",  count: "6 236"  },
-                    { name: "Hadith", count: "60 000+" },
-                    { name: "Tafsir", count: null },
-                    { name: "Fiqh",   count: null },
+                    { name: "Tout le corpus", count: "66 000+", active: true, href: "/search?q=%D8%B1%D8%AD%D9%85%D8%A9" },
+                    { name: "Coran",  count: "6 236", active: false, href: "/search?q=%D8%B1%D8%AD%D9%85%D8%A9&types=quran" },
+                    { name: "Hadith", count: "60 000+", active: false, href: "/search?q=%D8%B1%D8%AD%D9%85%D8%A9&types=hadith" },
+                    { name: "Tafsir", count: null, active: false, href: "/search?q=%D8%B1%D8%AD%D9%85%D8%A9&types=tafsir" },
                   ].map((item) => (
-                    <div
+                    <Link
                       key={item.name}
-                      className="flex items-center justify-between px-3 py-2.5 text-sm"
+                      href={item.href}
+                      className="flex items-center justify-between px-3 py-2.5 text-sm rounded transition-all duration-300 hover:bg-[rgba(200,157,58,0.05)] hover:text-[#C89D3A] group/filter"
                       style={{
                         background: item.active ? "rgba(200,157,58,0.08)" : "transparent",
                         color: item.active ? "#C89D3A" : "rgba(250,247,239,0.38)",
@@ -312,7 +425,7 @@ export default function LandingPage() {
                     >
                       <span className="flex items-center gap-2.5">
                         <span
-                          className="w-2 h-2 rounded-full shrink-0"
+                          className="w-2 h-2 rounded-full shrink-0 transition-colors duration-300 group-hover/filter:bg-[#C89D3A] group-hover/filter:border-[#C89D3A]"
                           style={{
                             background: item.active ? "#C89D3A" : "transparent",
                             border: `1.5px solid ${item.active ? "#C89D3A" : "rgba(250,247,239,0.15)"}`,
@@ -321,11 +434,11 @@ export default function LandingPage() {
                         {item.name}
                       </span>
                       {item.count && (
-                        <span className="text-xs tabular-nums" style={{ color: "rgba(250,247,239,0.22)" }}>
+                        <span className="text-xs tabular-nums opacity-60 group-hover/filter:text-[#C89D3A] transition-colors" style={{ color: "rgba(250,247,239,0.22)" }}>
                           {item.count}
                         </span>
                       )}
-                    </div>
+                    </Link>
                   ))}
                 </nav>
               </aside>

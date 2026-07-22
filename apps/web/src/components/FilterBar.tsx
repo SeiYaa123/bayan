@@ -5,7 +5,6 @@ const CORPUS_FILTERS = [
   { id: "quran",  label: "Coran",           count: "6 236" },
   { id: "hadith", label: "Hadith",          count: "60 000+" },
   { id: "tafsir", label: "Tafsir",          count: null },
-  { id: "fiqh",   label: "Fiqh",            count: null },
 ]
 
 interface FilterBarProps {

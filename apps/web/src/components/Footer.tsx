@@ -7,26 +7,18 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-16">
 
           <div className="lg:col-span-4 space-y-5">
-            <div className="flex items-center gap-2.5">
-              <span
-                dir="rtl"
-                style={{ fontFamily: "'Amiri', serif", fontSize: "1.75rem", fontWeight: 700, color: "var(--color-gold)", lineHeight: 1 }}
-              >
-                بيان
-              </span>
-              <span style={{ width: "1px", height: "1.2rem", background: "rgba(200,157,58,0.35)" }} />
-              <span
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "0.9rem",
-                  fontWeight: 500,
-                  letterSpacing: "0.22em",
-                  textTransform: "uppercase",
-                  color: "var(--color-text-muted)",
-                }}
-              >
-                Bayān
-              </span>
+            <div className="flex items-center gap-2">
+              <img
+                src="/symbole_gold.png"
+                alt="Bayran Symbole"
+                className="h-12 w-auto object-contain"
+              />
+              <span className="text-[#C89D3A] text-[9px] select-none opacity-80 mx-0.5">◆</span>
+              <img
+                src="/bayran_text.png"
+                alt="Bayran Logo"
+                className="h-6 w-auto object-contain"
+              />
             </div>
             <p className="text-sm leading-relaxed max-w-xs" style={{ color: "rgba(250,247,239,0.38)" }}>
               Moteur de recherche sémantique sur le corpus islamique.
@@ -44,7 +36,6 @@ export default function Footer() {
                   { href: "/search",        label: "Recherche" },
                   { href: "/corpus",        label: "Corpus" },
                   { href: "/apprentissage", label: "Apprendre" },
-                  { href: "/evolution",     label: "Évolution" },
                 ].map((l) => (
                   <Link
                     key={l.href}
@@ -67,7 +58,6 @@ export default function Footer() {
                   { href: "/corpus/hadith/bukhari",     label: "Hadith Bukhari" },
                   { href: "/corpus/hadith/muslim",      label: "Hadith Muslim" },
                   { href: "/corpus/tafsir/jalalayn",    label: "Tafsir al-Jalalayn" },
-                  { href: "/fiqh/compare",              label: "Fiqh — 4 madhhabs" },
                 ].map((l) => (
                   <Link
                     key={l.href}

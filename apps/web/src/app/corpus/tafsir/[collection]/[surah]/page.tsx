@@ -169,7 +169,7 @@ export default async function TafsirSurahPage({ params }: Props) {
                     paddingLeft: "1rem",
                   }}
                 >
-                  {entry.translation_fr ?? entry.translation_en}
+                  {collection === "ibn_kathir" ? (entry.translation_en ?? entry.translation_fr) : (entry.translation_fr ?? entry.translation_en)}
                 </p>
               )}
             </div>

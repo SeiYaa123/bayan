@@ -1,13 +1,15 @@
 {
-  "name": "Bayān",
+  "name": "Bayān — Recherche Sémantique Islamique",
   "short_name": "Bayān",
-  "description": "Moteur de recherche sémantique sur le corpus islamique — Coran, Hadith, Tafsir, Fiqh",
+  "description": "Moteur de recherche sémantique sur le corpus islamique — Coran, Hadith, Tafsir",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0d0d0f",
-  "theme_color": "#c8a04a",
+  "background_color": "#050d07",
+  "theme_color": "#050d07",
   "orientation": "portrait-primary",
   "lang": "fr",
+  "dir": "auto",
   "icons": [
     {
       "src": "/icon-192.svg",
@@ -25,9 +27,16 @@
   "shortcuts": [
     {
       "name": "Rechercher",
-      "short_name": "Search",
+      "short_name": "Recherche",
       "description": "Lancer une recherche sémantique",
       "url": "/search",
+      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Corpus Islamique",
+      "short_name": "Corpus",
+      "description": "Consulter les sourates, hadiths et tafsir",
+      "url": "/corpus",
       "icons": [{ "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     }
   ],

@@ -25,11 +25,14 @@ async def get_cached_search(
     limit: int,
     offset: int,
 ) -> dict | None:
-    key = _cache_key(query, types, limit, offset)
-    value = await redis.get(key)
-    if value is None:
+    try:
+        key = _cache_key(query, types, limit, offset)
+        value = await redis.get(key)
+        if value is None:
+            return None
+        return json.loads(value)
+    except Exception:
         return None
-    return json.loads(value)
 
 
 async def set_cached_search(
@@ -40,5 +43,8 @@ async def set_cached_search(
     offset: int,
     payload: dict,
 ) -> None:
-    key = _cache_key(query, types, limit, offset)
-    await redis.set(key, json.dumps(payload, ensure_ascii=False), ex=SEARCH_CACHE_TTL)
+    try:
+        key = _cache_key(query, types, limit, offset)
+        await redis.set(key, json.dumps(payload, ensure_ascii=False), ex=SEARCH_CACHE_TTL)
+    except Exception:
+        pass

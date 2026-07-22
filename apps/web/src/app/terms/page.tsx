@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const SECTIONS = [
   {
     title: "1. Objet",
-    content: `Bayān est un outil de recherche sémantique sur le corpus islamique classique (Coran, Hadith, Tafsir, Fiqh). Il est destiné à un usage académique, éducatif et personnel.
+    content: `Bayān est un outil de recherche sémantique sur le corpus islamique classique (Coran, Hadith, Tafsir). Il est destiné à un usage académique, éducatif et personnel.
 
 Le service est édité et exploité en tant que service en ligne accessible sur abonnement.`,
   },
@@ -34,7 +34,7 @@ Tout usage commercial de masse, scraping automatisé ou revente des données est
 
 Les résultats sont des références vers des sources primaires. L'utilisateur est seul responsable de l'interprétation et de l'application des textes trouvés.
 
-Pour toute question de fiqh, consultez un érudit qualifié.`,
+Pour toute question théologique ou juridique, consultez un érudit qualifié.`,
   },
   {
     title: "5. Abonnements et paiements",

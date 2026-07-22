@@ -3,6 +3,7 @@ import NavBar from "@/components/NavBar"
 import Footer from "@/components/Footer"
 import { getQuranSurah, type Ayah } from "@/lib/api"
 import { SURAH_META } from "@/lib/quran-meta"
+import AudioPlayButton from "@/components/AudioPlayButton"
 
 interface Props {
   params: Promise<{ surah: string }>
@@ -52,10 +53,20 @@ export default async function SurahPage({ params }: Props) {
               {meta.transliteration}
             </span>
           )}
-          <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginLeft: "auto" }}>
+          <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>
             Sourate {surahNum} · {data.ayah_count} ayats
             {meta && <> · {meta.revelation}</>}
           </span>
+
+          <div className="ml-auto">
+            <AudioPlayButton
+              surah={surahNum}
+              ayah={1}
+              surahName={data.surah_name}
+              title={`Sourate ${surahNum} · ${data.surah_name}`}
+              variant="badge"
+            />
+          </div>
         </div>
       </header>
 
@@ -101,7 +112,8 @@ export default async function SurahPage({ params }: Props) {
       {/* Ayats */}
       <main className="max-w-4xl mx-auto px-6 pt-6 pb-20 flex flex-col gap-0">
         {data.ayahs.map((ayah: Ayah, idx: number) => {
-          const ayahNum = ayah.metadata?.ayah ?? String(idx + 1)
+          const ayahNumStr = ayah.metadata?.ayah ?? String(idx + 1)
+          const ayahNum = parseInt(ayahNumStr, 10) || (idx + 1)
           return (
             <div
               key={ayah.id}
@@ -109,7 +121,7 @@ export default async function SurahPage({ params }: Props) {
               className="group border-b py-8 flex flex-col gap-4 scroll-mt-32 target:bg-[rgba(200,157,58,0.05)] target:rounded-lg target:px-4 target:-mx-4 transition-colors"
               style={{ borderColor: "var(--color-border)" }}
             >
-              {/* Reference badge */}
+              {/* Reference badge & Audio button */}
               <div className="flex items-center gap-3">
                 <span
                   style={{
@@ -123,9 +135,18 @@ export default async function SurahPage({ params }: Props) {
                 >
                   {ayah.reference}
                 </span>
+
+                <AudioPlayButton
+                  surah={surahNum}
+                  ayah={ayahNum}
+                  surahName={data.surah_name}
+                  arabicText={ayah.arabic}
+                  variant="badge"
+                />
+
                 <Link
                   href={`/text/${ayah.id}`}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-xs ml-auto"
                   style={{ color: "var(--color-text-muted)" }}
                 >
                   connexions →

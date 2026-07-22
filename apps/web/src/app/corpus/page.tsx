@@ -68,7 +68,7 @@ export default async function CorpusPage() {
         {/* Coran */}
         <Link
           href="/corpus/quran"
-          className="group rounded-2xl border p-8 flex flex-col gap-6 transition-colors hover:border-[rgba(200,157,58,0.4)]"
+          className="group rounded-2xl border p-8 flex flex-col gap-6 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:border-[rgba(200,157,58,0.4)] hover:shadow-[0_12px_32px_rgba(200,157,58,0.06)]"
           style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
         >
           <div className="flex items-start justify-between gap-4">
@@ -162,7 +162,7 @@ export default async function CorpusPage() {
                 <Link
                   key={c.collection}
                   href={`/corpus/hadith/${c.collection}`}
-                  className="flex items-center justify-between rounded-lg px-4 py-3 border transition-colors hover:border-[rgba(200,157,58,0.3)]"
+                  className="flex items-center justify-between rounded-lg px-4 py-3 border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.015] hover:border-[rgba(200,157,58,0.35)] hover:shadow-[0_4px_20px_rgba(200,157,58,0.04)]"
                   style={{ borderColor: "var(--color-border)", background: "var(--color-surface-2, rgba(255,255,255,0.02))" }}
                 >
                   <div className="flex items-center gap-3">
@@ -226,7 +226,7 @@ export default async function CorpusPage() {
                 <Link
                   key={t.collection}
                   href={`/corpus/tafsir/${t.collection}`}
-                  className="flex items-center justify-between rounded-lg px-4 py-3 border transition-colors hover:border-[rgba(167,139,250,0.35)]"
+                  className="flex items-center justify-between rounded-lg px-4 py-3 border transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.015] hover:border-[rgba(167,139,250,0.45)] hover:shadow-[0_4px_20px_rgba(167,139,250,0.04)]"
                   style={{ borderColor: "var(--color-border)", background: "var(--color-surface-2, rgba(255,255,255,0.02))" }}
                 >
                   <div className="flex items-center gap-3">
