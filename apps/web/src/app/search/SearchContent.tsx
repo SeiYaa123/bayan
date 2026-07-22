@@ -7,6 +7,7 @@ import { addToHistory } from "@/lib/searchHistory"
 import SearchBar from "@/components/SearchBar"
 import ResultCard from "@/components/ResultCard"
 import FilterBar from "@/components/FilterBar"
+import NavBar from "@/components/NavBar"
 
 const PAGE_SIZE = 20
 
@@ -114,40 +115,84 @@ export default function SearchContent() {
   /* ── État pré-recherche ── */
   if (!searched) {
     return (
-      <div
-        className="flex-1 flex flex-col items-center justify-center px-6 py-20 gap-6"
+      <main 
+        className="min-h-screen flex flex-col justify-between"
         style={{ background: "var(--color-bg)" }}
       >
-        <p className="arabic-xl float shimmer-text" style={{ display: "block", color: "var(--color-gold)" }}>
-          ٱقْرَأْ بِٱسْمِ رَبِّكَ
-        </p>
-        <div className="w-full max-w-2xl">
-          <SearchBar
-            onSearch={(q) => runSearch(q, activeTypes)}
-            loading={loading}
-            initialValue={initialQuery}
-          />
-        </div>
-        <div className="flex flex-wrap gap-2 justify-center mt-2">
-          {SAMPLE_QUERIES.map((q) => (
-            <button
-              key={q.ar}
-              onClick={() => runSearch(q.ar, activeTypes)}
-              className="px-3 py-1 rounded-full text-xs border transition-opacity hover:opacity-70"
-              style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}
+        <NavBar transparentOnTop />
+
+        {/* Hero Section */}
+        <section
+          className="relative w-full flex-grow flex flex-col justify-center items-center pt-28 pb-12 px-6 overflow-hidden bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/fondhero.png')",
+          }}
+        >
+          {/* Main Hero Content */}
+          <div className="relative max-w-5xl mx-auto text-center z-10 w-full flex flex-col items-center gap-6">
+            
+            {/* Logo Calligraphie */}
+            <div className="flex items-center justify-center">
+              <img
+                src="/symbole_gold.png"
+                alt="Emblème"
+                className="h-28 md:h-36 w-auto object-contain"
+              />
+              <span className="text-[#C89D3A] text-lg md:text-2xl mx-3 select-none">◆</span>
+              <img
+                src="/bayran_text.png"
+                alt="Bayran"
+                className="h-9 md:h-11 w-auto object-contain"
+                style={{ transform: "translateY(1.5px)" }}
+              />
+            </div>
+
+            <p 
+              className="text-xs uppercase tracking-[0.25em] font-medium"
+              style={{ color: "rgba(90, 79, 66, 0.8)" }}
             >
-              <span className="arabic">{q.ar}</span>
-              <span className="opacity-60"> — {q.fr}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+              Moteur de recherche unifié (Coran, Hadiths, Tafsir)
+            </p>
+
+            {/* Central Search Bar */}
+            <div className="w-full max-w-2xl mt-4">
+              <SearchBar
+                onSearch={(q) => runSearch(q, activeTypes)}
+                loading={loading}
+                initialValue={initialQuery}
+              />
+            </div>
+
+            {/* Suggestions */}
+            <div className="flex flex-wrap gap-2 justify-center mt-2">
+              <span className="text-xs font-semibold mr-1 self-center" style={{ color: "rgba(90, 79, 66, 0.8)" }}>Exemples :</span>
+              {SAMPLE_QUERIES.map((q) => (
+                <button
+                  key={q.ar}
+                  onClick={() => runSearch(q.ar, activeTypes)}
+                  className="px-4 py-1.5 rounded-full text-xs border transition-all shadow-sm"
+                  style={{ 
+                    borderColor: "#D5C8B4", 
+                    color: "#5A4F42", 
+                    background: "rgba(250, 248, 245, 0.7)" 
+                  }}
+                >
+                  <span className="font-serif mr-1">{q.ar}</span>
+                  <span className="opacity-70">— {q.fr}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
     )
   }
 
   /* ── Mise en page post-recherche ── */
   return (
-    <div className="flex flex-1" style={{ minHeight: 0 }}>
+    <main className="min-h-screen flex flex-col" style={{ background: "var(--color-bg)" }}>
+      <NavBar />
+      <div className="flex flex-1" style={{ minHeight: 0 }}>
       {/* Barre latérale */}
       <aside
         className="hidden md:block w-60 shrink-0 border-r"
@@ -293,5 +338,6 @@ export default function SearchContent() {
         </div>
       </main>
     </div>
+    </main>
   )
 }
