@@ -2,6 +2,12 @@ import Link from "next/link"
 import NavBar from "@/components/NavBar"
 import Footer from "@/components/Footer"
 import { getHadithCollections, getTafsirCollections } from "@/lib/api"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Corpus Islamique",
+  description: "Accédez au Coran, aux collections majeures de Hadiths et aux commentaires du Tafsir Ibn Kathir.",
+}
 
 const COLLECTION_ICONS: Record<string, string> = {
   bukhari:   "البخاري",

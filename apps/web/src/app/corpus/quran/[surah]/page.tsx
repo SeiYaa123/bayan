@@ -4,9 +4,25 @@ import Footer from "@/components/Footer"
 import { getQuranSurah, type Ayah } from "@/lib/api"
 import { SURAH_META } from "@/lib/quran-meta"
 import AudioPlayButton from "@/components/AudioPlayButton"
+import type { Metadata } from "next"
 
 interface Props {
   params: Promise<{ surah: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { surah } = await params
+  const surahNum = parseInt(surah, 10)
+  const meta = SURAH_META[surahNum]
+  if (!meta) {
+    return {
+      title: "Sourate non trouvée",
+    }
+  }
+  return {
+    title: `Sourate ${meta.transliteration} (${meta.english})`,
+    description: `Lisez et écoutez la sourate ${meta.transliteration} (${meta.english}) en arabe avec traductions et audio complets.`,
+  }
 }
 
 export default async function SurahPage({ params }: Props) {

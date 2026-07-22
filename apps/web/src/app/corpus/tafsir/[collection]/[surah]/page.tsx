@@ -14,6 +14,29 @@ const TAFSIR_TITLES: Record<string, string> = {
   tabari: "الطبري",
 }
 
+import type { Metadata } from "next"
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { collection, surah } = await params
+  const surahNum = parseInt(surah, 10)
+  const meta = SURAH_META[surahNum]
+  const names: Record<string, string> = {
+    jalalayn: "Tafsir al-Jalalayn",
+    ibn_kathir: "Tafsir Ibn Kathir",
+    tabari: "Tafsir al-Tabari",
+  }
+  const colName = names[collection] || collection
+  if (!meta) {
+    return {
+      title: "Commentaire non trouvé",
+    }
+  }
+  return {
+    title: `${colName} — Sourate ${meta.transliteration}`,
+    description: `Lisez le commentaire et l'explication (tafsir) de la sourate ${meta.transliteration} par ${colName}.`,
+  }
+}
+
 export default async function TafsirSurahPage({ params }: Props) {
   const { collection, surah: surahParam } = await params
   const surahNum = parseInt(surahParam, 10)

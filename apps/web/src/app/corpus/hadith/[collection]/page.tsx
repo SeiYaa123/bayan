@@ -3,9 +3,28 @@ import NavBar from "@/components/NavBar"
 import Footer from "@/components/Footer"
 import { getHadithCollection, type Hadith } from "@/lib/api"
 
+import type { Metadata } from "next"
+
 interface Props {
   params: Promise<{ collection: string }>
   searchParams: Promise<{ page?: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { collection } = await params
+  const names: Record<string, string> = {
+    bukhari: "Sahih al-Bukhari",
+    muslim: "Sahih Muslim",
+    abu_dawud: "Sunan Abi Dawud",
+    tirmidhi: "Jami' al-Tirmidhi",
+    nasai: "Sunan al-Nasa'i",
+    ibn_majah: "Sunan Ibn Majah",
+  }
+  const colName = names[collection] || collection.charAt(0).toUpperCase() + collection.slice(1)
+  return {
+    title: `Hadiths — ${colName}`,
+    description: `Parcourez et lisez la collection de Hadiths de ${colName} avec les chaînes de transmission et commentaires.`,
+  }
 }
 
 const PAGE_SIZE = 50

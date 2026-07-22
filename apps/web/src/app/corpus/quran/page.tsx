@@ -3,6 +3,12 @@ import NavBar from "@/components/NavBar"
 import Footer from "@/components/Footer"
 import { getQuranSurahs } from "@/lib/api"
 import { SURAH_META } from "@/lib/quran-meta"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Le Saint Coran",
+  description: "Lisez et étudiez le Saint Coran en arabe avec traductions en français et en anglais.",
+}
 
 export default async function QuranIndexPage() {
   let surahs: Awaited<ReturnType<typeof getQuranSurahs>> = []
