@@ -160,6 +160,7 @@ export default function SearchContent() {
                 onSearch={(q) => runSearch(q, activeTypes)}
                 loading={loading}
                 initialValue={initialQuery}
+                light
               />
             </div>
 
