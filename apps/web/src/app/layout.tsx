@@ -8,7 +8,7 @@ import PwaRegister from "@/components/PwaRegister"
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://bayran.fr"
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.bayran.fr"
 
 export const viewport: Viewport = {
   width: "device-width",

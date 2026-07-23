@@ -7,22 +7,34 @@ import AudioPlayButton from "@/components/AudioPlayButton"
 import type { Metadata } from "next"
 import TextDetailActions from "@/components/TextDetailActions"
 
+import { notFound } from "next/navigation"
+
 interface Props {
   params: Promise<{ surah: string }>
+}
+
+export async function generateStaticParams() {
+  return Array.from({ length: 114 }, (_, i) => ({
+    surah: (i + 1).toString(),
+  }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { surah } = await params
   const surahNum = parseInt(surah, 10)
   const meta = SURAH_META[surahNum]
-  if (!meta) {
-    return {
-      title: "Sourate non trouvée",
-    }
+  if (isNaN(surahNum) || surahNum < 1 || surahNum > 114 || !meta) {
+    notFound()
   }
   return {
     title: `Sourate ${meta.transliteration} (${meta.english})`,
     description: `Lisez et écoutez la sourate ${meta.transliteration} (${meta.english}) en arabe avec traductions et audio complets.`,
+    alternates: {
+      canonical: `/corpus/quran/${surahNum}`,
+    },
+    openGraph: {
+      url: `/corpus/quran/${surahNum}`,
+    }
   }
 }
 
@@ -31,22 +43,75 @@ export default async function SurahPage({ params }: Props) {
   const surahNum = parseInt(surahParam, 10)
 
   if (isNaN(surahNum) || surahNum < 1 || surahNum > 114) {
-    return <NotFound />
+    notFound()
   }
 
   let data: Awaited<ReturnType<typeof getQuranSurah>> | null = null
   try {
     data = await getQuranSurah(surahNum)
   } catch {
-    return <NotFound />
+    notFound()
   }
 
   const meta = SURAH_META[surahNum]
   const prevSurah = surahNum > 1 ? surahNum - 1 : null
   const nextSurah = surahNum < 114 ? surahNum + 1 : null
 
+  // Breadcrumb schema
+  const breadcrumbJson = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://www.bayran.fr" },
+      { "@type": "ListItem", "position": 2, "name": "Corpus", "item": "https://www.bayran.fr/corpus" },
+      { "@type": "ListItem", "position": 3, "name": "Coran", "item": "https://www.bayran.fr/corpus/quran" },
+      { "@type": "ListItem", "position": 4, "name": `Sourate ${meta.transliteration}`, "item": `https://www.bayran.fr/corpus/quran/${surahNum}` }
+    ]
+  }
+
+  // WebPage & Chapter schema
+  const webpageJson = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `https://www.bayran.fr/corpus/quran/${surahNum}`,
+    "url": `https://www.bayran.fr/corpus/quran/${surahNum}`,
+    "name": `Sourate ${meta.transliteration} (${meta.english})`,
+    "description": `Lisez et écoutez la sourate ${meta.transliteration} (${meta.english}) en arabe avec traductions et audio complets.`,
+    "inLanguage": ["ar", "fr"],
+    "isPartOf": { "@id": "https://www.bayran.fr/#website" },
+    "mainEntity": {
+      "@type": "Chapter",
+      "name": meta.transliteration,
+      "alternateName": meta.english,
+      "position": surahNum,
+      "inLanguage": "ar",
+      "isPartOf": {
+        "@type": "Book",
+        "name": "Coran",
+        "alternateName": "القرآن الكريم",
+        "inLanguage": "ar"
+      },
+      "hasPart": data.ayahs.slice(0, 3).map((v: Ayah) => ({
+        "@type": "Quotation",
+        "position": parseInt(v.reference.split(":")[1], 10),
+        "text": v.arabic,
+        "inLanguage": "ar",
+        "about": v.translation_fr ?? undefined,
+        "citation": `Coran ${v.reference}`
+      }))
+    }
+  }
+
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJson) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageJson) }}
+      />
       <NavBar />
 
       {/* Header */}
@@ -54,35 +119,50 @@ export default async function SurahPage({ params }: Props) {
         className="sticky top-[61px] z-40 px-6 py-4"
         style={{ background: "var(--color-bg)", borderBottom: "1px solid var(--color-border)" }}
       >
-        <div className="max-w-4xl mx-auto flex items-center gap-3 flex-wrap">
-          <Link href="/corpus/quran" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "rgba(250,247,239,0.65)" }}>
-            ← Coran
-          </Link>
-          <span style={{ width: "1px", height: "1rem", background: "var(--color-border)" }} />
-          <span
-            dir="rtl"
-            style={{ fontFamily: "'Amiri', serif", fontSize: "1.15rem", color: "var(--color-gold)", lineHeight: 1 }}
-          >
-            {data.surah_name}
-          </span>
-          {meta && (
-            <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
-              {meta.transliteration}
-            </span>
-          )}
-          <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>
-            Sourate {surahNum} · {data.ayah_count} ayats
-            {meta && <> · {meta.revelation}</>}
-          </span>
+        <div className="max-w-4xl mx-auto flex flex-col gap-2">
+          {/* Breadcrumb component */}
+          <div className="flex items-center gap-2 text-xs text-[rgba(250,247,239,0.45)]">
+            <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
+            <span>/</span>
+            <Link href="/corpus" className="hover:text-white transition-colors">Corpus</Link>
+            <span>/</span>
+            <Link href="/corpus/quran" className="hover:text-white transition-colors">Coran</Link>
+            <span>/</span>
+            <span className="text-[rgba(250,247,239,0.7)]">Sourate {meta.transliteration}</span>
+          </div>
 
-          <div className="ml-auto">
-            <AudioPlayButton
-              surah={surahNum}
-              ayah={1}
-              surahName={data.surah_name}
-              title={`Sourate ${surahNum} · ${data.surah_name}`}
-              variant="badge"
-            />
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link href="/corpus/quran" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "rgba(250,247,239,0.65)" }}>
+              ← Coran
+            </Link>
+            <span style={{ width: "1px", height: "1rem", background: "var(--color-border)" }} />
+            <h1 className="flex items-center gap-2 flex-wrap">
+              <span
+                dir="rtl"
+                style={{ fontFamily: "'Amiri', serif", fontSize: "1.15rem", color: "var(--color-gold)", lineHeight: 1 }}
+              >
+                {data.surah_name}
+              </span>
+              {meta && (
+                <span style={{ fontSize: "0.8rem", color: "var(--color-text-muted)" }}>
+                  {meta.transliteration}
+                </span>
+              )}
+            </h1>
+            <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)" }}>
+              Sourate {surahNum} · {data.ayah_count} ayats
+              {meta && <> · {meta.revelation}</>}
+            </span>
+
+            <div className="ml-auto">
+              <AudioPlayButton
+                surah={surahNum}
+                ayah={1}
+                surahName={data.surah_name}
+                title={`Sourate ${surahNum} · ${data.surah_name}`}
+                variant="badge"
+              />
+            </div>
           </div>
         </div>
       </header>

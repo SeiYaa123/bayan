@@ -7,6 +7,12 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Corpus Islamique",
   description: "Accédez au Coran, aux collections majeures de Hadiths et aux commentaires du Tafsir Ibn Kathir.",
+  alternates: {
+    canonical: "/corpus",
+  },
+  openGraph: {
+    url: "/corpus",
+  }
 }
 
 const COLLECTION_ICONS: Record<string, string> = {

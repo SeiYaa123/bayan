@@ -28,25 +28,45 @@ const TAFSIR_INFO: Record<string, { title: string; arabic: string; desc: string 
 
 import type { Metadata } from "next"
 
+import { notFound } from "next/navigation"
+
+export async function generateStaticParams() {
+  return [
+    { collection: "ibn_kathir" },
+  ]
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { collection } = await params
+  if (collection !== "ibn_kathir") {
+    notFound()
+  }
   const info = TAFSIR_INFO[collection]
   const titleName = info ? info.title : collection.charAt(0).toUpperCase() + collection.slice(1)
   return {
     title: `Commentaires — ${titleName}`,
     description: `Parcourez les commentaires et explications de sourates du Coran par ${titleName}.`,
+    alternates: {
+      canonical: `/corpus/tafsir/${collection}`,
+    },
+    openGraph: {
+      url: `/corpus/tafsir/${collection}`,
+    }
   }
 }
 
 export default async function TafsirCollectionPage({ params }: Props) {
   const { collection } = await params
+  if (collection !== "ibn_kathir") {
+    notFound()
+  }
   const info = TAFSIR_INFO[collection]
 
   let surahs: Awaited<ReturnType<typeof getTafsirSurahs>> = []
   try {
     surahs = await getTafsirSurahs(collection)
   } catch {
-    return <NotFound collection={collection} />
+    notFound()
   }
 
   return (

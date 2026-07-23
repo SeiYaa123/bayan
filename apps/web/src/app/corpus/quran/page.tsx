@@ -8,6 +8,12 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Le Saint Coran",
   description: "Lisez et étudiez le Saint Coran en arabe avec traductions en français et en anglais.",
+  alternates: {
+    canonical: "/corpus/quran",
+  },
+  openGraph: {
+    url: "/corpus/quran",
+  }
 }
 
 export default async function QuranIndexPage() {

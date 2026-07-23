@@ -5,25 +5,39 @@ import { getHadithCollection, type Hadith } from "@/lib/api"
 import type { Metadata } from "next"
 import TextDetailActions from "@/components/TextDetailActions"
 
+import { notFound } from "next/navigation"
+
 interface Props {
   params: Promise<{ collection: string }>
   searchParams: Promise<{ page?: string }>
 }
 
+export async function generateStaticParams() {
+  return [
+    { collection: "bukhari" },
+    { collection: "muslim" },
+  ]
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { collection } = await params
+  if (collection !== "bukhari" && collection !== "muslim") {
+    notFound()
+  }
   const names: Record<string, string> = {
     bukhari: "Sahih al-Bukhari",
     muslim: "Sahih Muslim",
-    abu_dawud: "Sunan Abi Dawud",
-    tirmidhi: "Jami' al-Tirmidhi",
-    nasai: "Sunan al-Nasa'i",
-    ibn_majah: "Sunan Ibn Majah",
   }
-  const colName = names[collection] || collection.charAt(0).toUpperCase() + collection.slice(1)
+  const colName = names[collection] || collection
   return {
     title: `Hadiths — ${colName}`,
     description: `Parcourez et lisez la collection de Hadiths de ${colName} avec les chaînes de transmission et commentaires.`,
+    alternates: {
+      canonical: `/corpus/hadith/${collection}`,
+    },
+    openGraph: {
+      url: `/corpus/hadith/${collection}`,
+    }
   }
 }
 
@@ -35,17 +49,55 @@ export default async function HadithCollectionPage({ params, searchParams }: Pro
   const page = Math.max(1, parseInt(pageParam ?? "1", 10))
   const offset = (page - 1) * PAGE_SIZE
 
+  if (collection !== "bukhari" && collection !== "muslim") {
+    notFound()
+  }
+
   let data: Awaited<ReturnType<typeof getHadithCollection>> | null = null
   try {
     data = await getHadithCollection(collection, PAGE_SIZE, offset)
   } catch {
-    return <NotFound collection={collection} />
+    notFound()
   }
 
   const totalPages = Math.ceil(data.total / PAGE_SIZE)
 
+  // Breadcrumb schema
+  const breadcrumbJson = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://www.bayran.fr" },
+      { "@type": "ListItem", "position": 2, "name": "Corpus", "item": "https://www.bayran.fr/corpus" },
+      { "@type": "ListItem", "position": 3, "name": "Hadith", "item": "https://www.bayran.fr/corpus" },
+      { "@type": "ListItem", "position": 4, "name": data.label, "item": `https://www.bayran.fr/corpus/hadith/${collection}` }
+    ]
+  }
+
+  // Book/Collection schema
+  const bookJson = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "@id": `https://www.bayran.fr/corpus/hadith/${collection}`,
+    "name": data.label,
+    "inLanguage": ["ar", "fr"],
+    "author": {
+      "@type": "Person",
+      "name": collection === "bukhari" ? "Muhammad al-Bukhari" : "Muslim ibn al-Hajjaj"
+    },
+    "description": `Recueil de Hadiths compilé par l'imam ${collection === "bukhari" ? "al-Bukhari" : "Muslim"}.`
+  }
+
   return (
     <div className="min-h-screen" style={{ background: "var(--color-bg)" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJson) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJson) }}
+      />
       <NavBar />
 
       {/* Header */}
@@ -53,24 +105,35 @@ export default async function HadithCollectionPage({ params, searchParams }: Pro
         className="sticky top-[61px] z-40 px-6 py-4"
         style={{ background: "var(--color-bg)", borderBottom: "1px solid var(--color-border)" }}
       >
-        <div className="max-w-4xl mx-auto flex items-center gap-3 flex-wrap">
-          <Link href="/corpus" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "rgba(250,247,239,0.65)" }}>
-            ← Corpus
-          </Link>
-          <span style={{ width: "1px", height: "1rem", background: "var(--color-border)" }} />
-          <h1
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "1.1rem",
-              fontWeight: 400,
-              color: "var(--color-text)",
-            }}
-          >
-            {data.label}
-          </h1>
-          <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginLeft: "auto" }}>
-            {data.total.toLocaleString("fr-FR")} hadiths
-          </span>
+        <div className="max-w-4xl mx-auto flex flex-col gap-2">
+          {/* Breadcrumb component */}
+          <div className="flex items-center gap-2 text-xs text-[rgba(250,247,239,0.45)]">
+            <Link href="/" className="hover:text-white transition-colors">Accueil</Link>
+            <span>/</span>
+            <Link href="/corpus" className="hover:text-white transition-colors">Corpus</Link>
+            <span>/</span>
+            <span className="text-[rgba(250,247,239,0.7)]">{data.label}</span>
+          </div>
+
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link href="/corpus" className="text-sm hover:opacity-70 transition-opacity" style={{ color: "rgba(250,247,239,0.65)" }}>
+              ← Corpus
+            </Link>
+            <span style={{ width: "1px", height: "1rem", background: "var(--color-border)" }} />
+            <h1
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "1.1rem",
+                fontWeight: 400,
+                color: "var(--color-text)",
+              }}
+            >
+              {data.label}
+            </h1>
+            <span style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginLeft: "auto" }}>
+              {data.total.toLocaleString("fr-FR")} hadiths
+            </span>
+          </div>
         </div>
       </header>
 
@@ -152,7 +215,7 @@ function HadithRow({ hadith, collection }: { hadith: Hadith; collection: string 
         >
           {hadith.reference}
         </span>
-        {mainGrade?.grade && (
+        {mainGrade?.grade ? (
           <span
             style={{
               fontSize: "0.65rem",
@@ -163,6 +226,20 @@ function HadithRow({ hadith, collection }: { hadith: Hadith; collection: string 
             }}
           >
             {mainGrade.grade}{mainGrade.who ? ` · ${mainGrade.who}` : ""}
+          </span>
+        ) : (
+          <span
+            style={{
+              fontSize: "0.65rem",
+              color: "#C89D3A",
+              background: "rgba(200,157,58,0.1)",
+              padding: "0.15rem 0.45rem",
+              borderRadius: "4px",
+              border: "1px solid rgba(200,157,58,0.2)",
+              fontWeight: 600
+            }}
+          >
+            Sahih (Authentique)
           </span>
         )}
       </div>

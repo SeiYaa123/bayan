@@ -16,24 +16,37 @@ const TAFSIR_TITLES: Record<string, string> = {
 
 import type { Metadata } from "next"
 
+import { notFound } from "next/navigation"
+
+export async function generateStaticParams() {
+  return Array.from({ length: 114 }, (_, i) => ({
+    collection: "ibn_kathir",
+    surah: (i + 1).toString(),
+  }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { collection, surah } = await params
   const surahNum = parseInt(surah, 10)
   const meta = SURAH_META[surahNum]
+  if (collection !== "ibn_kathir" || isNaN(surahNum) || surahNum < 1 || surahNum > 114 || !meta) {
+    notFound()
+  }
   const names: Record<string, string> = {
     jalalayn: "Tafsir al-Jalalayn",
     ibn_kathir: "Tafsir Ibn Kathir",
     tabari: "Tafsir al-Tabari",
   }
   const colName = names[collection] || collection
-  if (!meta) {
-    return {
-      title: "Commentaire non trouvé",
-    }
-  }
   return {
     title: `${colName} — Sourate ${meta.transliteration}`,
     description: `Lisez le commentaire et l'explication (tafsir) de la sourate ${meta.transliteration} par ${colName}.`,
+    alternates: {
+      canonical: `/corpus/tafsir/${collection}/${surahNum}`,
+    },
+    openGraph: {
+      url: `/corpus/tafsir/${collection}/${surahNum}`,
+    }
   }
 }
 
@@ -41,15 +54,15 @@ export default async function TafsirSurahPage({ params }: Props) {
   const { collection, surah: surahParam } = await params
   const surahNum = parseInt(surahParam, 10)
 
-  if (isNaN(surahNum) || surahNum < 1 || surahNum > 114) {
-    return <NotFound collection={collection} />
+  if (collection !== "ibn_kathir" || isNaN(surahNum) || surahNum < 1 || surahNum > 114) {
+    notFound()
   }
 
   let data: Awaited<ReturnType<typeof getTafsirSurah>> | null = null
   try {
     data = await getTafsirSurah(collection, surahNum)
   } catch {
-    return <NotFound collection={collection} />
+    notFound()
   }
 
   const meta = SURAH_META[surahNum]

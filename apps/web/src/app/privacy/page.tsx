@@ -4,7 +4,12 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
-  robots: { index: false },
+  alternates: {
+    canonical: "/privacy",
+  },
+  openGraph: {
+    url: "/privacy",
+  }
 }
 
 const SECTIONS = [

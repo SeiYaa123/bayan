@@ -131,7 +131,7 @@ export default function LandingPage() {
         <section
           className="relative w-full min-h-screen flex flex-col justify-between items-center pt-24 pb-8 px-6 overflow-hidden bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/fondhero.png')",
+            backgroundImage: "url('/fondhero.webp')",
           }}
         >
           {/* Main Hero Content (Centré verticalement) */}
@@ -139,6 +139,12 @@ export default function LandingPage() {
             {/* Emblem spacer placeholder to maintain vertical layout alignment */}
             <div className="h-[200px] mb-4 pointer-events-none opacity-0" />
 
+            <h1
+              className="text-2xl md:text-3xl font-light tracking-wide text-white mb-8 max-w-2xl mx-auto px-4"
+              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+            >
+              Moteur de recherche sémantique sur le corpus islamique
+            </h1>
 
             {/* Barre de recherche centrale (Bulle arrondie) */}
             <form
@@ -149,7 +155,7 @@ export default function LandingPage() {
               <input
                 name="q"
                 type="text"
-                placeholder="Rechercher un article, une vidéo, un thème..."
+                placeholder="Rechercher dans le corpus (Coran, Hadiths, Tafsir)..."
                 dir="auto"
                 className="flex-1 bg-transparent py-2.5 text-[#1A1714] placeholder-[#8C8275] outline-none text-sm md:text-base font-medium"
               />

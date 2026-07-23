@@ -125,7 +125,7 @@ export default function SearchContent() {
         <section
           className="relative w-full flex-grow flex flex-col justify-center items-center pt-28 pb-12 px-6 overflow-hidden bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/fondhero.png')",
+            backgroundImage: "url('/fondhero.webp')",
           }}
         >
           {/* Main Hero Content */}
