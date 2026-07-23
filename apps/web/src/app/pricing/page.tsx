@@ -1,5 +1,17 @@
 import NavBar from "@/components/NavBar"
 import Link from "next/link"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Accès & Tarification — Bayan",
+  description: "Découvrez pourquoi Bayan est un projet entièrement libre, gratuit et sans publicité.",
+  alternates: {
+    canonical: "/pricing",
+  },
+  openGraph: {
+    url: "/pricing",
+  }
+}
 
 export default function PricingPage() {
   return (

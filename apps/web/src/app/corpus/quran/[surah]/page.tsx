@@ -19,6 +19,8 @@ export async function generateStaticParams() {
   }))
 }
 
+export const dynamicParams = false
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { surah } = await params
   const surahNum = parseInt(surah, 10)

@@ -14,7 +14,7 @@ interface Props {
   params: Promise<{ id: string }>
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://bayran.fr"
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.bayran.fr"
 
 const COLLECTION_LABELS: Record<string, string> = {
   quran:     "Coran",
