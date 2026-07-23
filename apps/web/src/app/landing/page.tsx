@@ -79,7 +79,7 @@ export default function LandingPage() {
     <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif", background: "var(--color-bg)" }}>
 
       {/* Moving Logo & Calligraphy Animating on Scroll */}
-      <div className="fixed inset-x-0 top-0 z-[60] max-w-7xl mx-auto px-6 h-20 pointer-events-none flex items-center justify-start">
+      <div className="hidden md:flex fixed inset-x-0 top-0 z-[60] max-w-7xl mx-auto px-6 h-20 pointer-events-none items-center justify-start">
         <Link
           href="/"
           className="transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-center pointer-events-auto"
@@ -137,11 +137,30 @@ export default function LandingPage() {
           {/* Main Hero Content (Centré verticalement) */}
           <div className="relative max-w-5xl mx-auto text-center z-10 my-auto w-full">
             {/* Emblem spacer placeholder to maintain vertical layout alignment */}
-            <div className="h-[100px] md:h-[200px] mb-4 pointer-events-none opacity-0" />
+            <div className="hidden md:block h-[200px] mb-4 pointer-events-none opacity-0" />
+
+            {/* Mobile Static Logo (flows with the document) */}
+            <div className="md:hidden flex items-center justify-center mb-8">
+              <img
+                src="/symbole_gold.png"
+                alt="Emblème"
+                className="h-28 w-auto object-contain"
+              />
+              <span className="text-[#C89D3A] text-lg mx-3 select-none">◆</span>
+              <img
+                src="/bayran_text.png"
+                alt="Bayran"
+                className="h-9 w-auto object-contain"
+                style={{ transform: "translateY(1.5px)" }}
+              />
+            </div>
 
             <h1
-              className="text-2xl md:text-3xl font-light tracking-wide text-white mb-8 max-w-2xl mx-auto px-4"
-              style={{ fontFamily: "'Cormorant Garamond', serif" }}
+              className="text-2xl md:text-3xl font-light tracking-wide mb-8 max-w-2xl mx-auto px-4"
+              style={{ 
+                fontFamily: "'Cormorant Garamond', serif",
+                color: "var(--color-text)"
+              }}
             >
               Moteur de recherche sémantique sur le corpus islamique
             </h1>

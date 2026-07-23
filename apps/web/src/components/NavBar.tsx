@@ -66,8 +66,8 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
           <div 
             className="flex-1 flex justify-start items-center transition-opacity duration-500"
             style={{ 
-              opacity: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? 0 : 1,
-              pointerEvents: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? "none" : "auto"
+              opacity: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? (scrolled ? 1 : 0) : 1,
+              pointerEvents: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? (scrolled ? "auto" : "none") : "auto"
             }}
           >
             <Link href="/" className="flex items-center gap-2 group">
@@ -156,7 +156,7 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
       {/* Mobile drawer overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-40 md:hidden"
+          className="fixed inset-0 z-[60] md:hidden"
           style={{ background: "rgba(5,13,7,0.6)", backdropFilter: "blur(4px)" }}
           onClick={() => setOpen(false)}
         />
@@ -164,7 +164,7 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
 
       {/* Mobile drawer panel */}
       <div
-        className="fixed top-0 right-0 z-50 h-full w-72 md:hidden flex flex-col transition-transform duration-300 ease-out"
+        className="fixed top-0 right-0 z-[70] h-full w-72 md:hidden flex flex-col transition-transform duration-300 ease-out"
         style={{
           background: "var(--color-surface)",
           borderLeft: "1px solid var(--color-border)",
