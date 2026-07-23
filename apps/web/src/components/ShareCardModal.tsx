@@ -263,7 +263,7 @@ export default function ShareCardModal({ data, isOpen, onClose }: ShareCardModal
     ctx.font = "500 20px Inter, sans-serif"
     ctx.fillStyle = theme.brandText
     ctx.globalAlpha = 0.6
-    ctx.fillText("bayansearch.com", width / 2, height - (format === "square" ? 65 : 100))
+    ctx.fillText("bayran.fr", width / 2, height - (format === "square" ? 65 : 100))
     ctx.globalAlpha = 1.0
 
   }, [data, format, themeKey, theme])

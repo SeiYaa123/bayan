@@ -37,7 +37,7 @@ Les communications sont chiffrées via TLS.`,
     title: "5. Vos droits (RGPD)",
     content: `Puisque nous ne collectons aucune donnée personnelle, aucune demande d'accès ou d'effacement n'est nécessaire.
 
-Pour toute question : privacy@bayansearch.com`,
+Pour toute question : privacy@bayran.fr`,
   },
 ]
 

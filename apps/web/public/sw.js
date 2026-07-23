@@ -44,7 +44,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   // Strategy 1: API requests (Network First, fallback to cache for offline reading)
-  if (url.pathname.startsWith("/api") || url.host.includes("localhost:8000") || url.host.includes("bayansearch.com")) {
+  if (url.pathname.startsWith("/api") || url.host.includes("localhost:8000") || url.host.includes("bayran.fr")) {
     event.respondWith(
       fetch(request)
         .then((response) => {
