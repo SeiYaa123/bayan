@@ -2,8 +2,8 @@ import Link from "next/link"
 import NavBar from "@/components/NavBar"
 import Footer from "@/components/Footer"
 import { getHadithCollection, type Hadith } from "@/lib/api"
-
 import type { Metadata } from "next"
+import TextDetailActions from "@/components/TextDetailActions"
 
 interface Props {
   params: Promise<{ collection: string }>
@@ -77,7 +77,7 @@ export default async function HadithCollectionPage({ params, searchParams }: Pro
       {/* Hadith list */}
       <main className="max-w-4xl mx-auto px-6 pt-6 pb-8 flex flex-col gap-0">
         {data.hadiths.map((h: Hadith) => (
-          <HadithRow key={h.id} hadith={h} />
+          <HadithRow key={h.id} hadith={h} collection={collection} />
         ))}
       </main>
 
@@ -122,7 +122,7 @@ export default async function HadithCollectionPage({ params, searchParams }: Pro
   )
 }
 
-function HadithRow({ hadith }: { hadith: Hadith }) {
+function HadithRow({ hadith, collection }: { hadith: Hadith; collection: string }) {
   const grades: Array<{ who?: string; grade?: string }> = Array.isArray(hadith.metadata?.grades)
     ? (hadith.metadata.grades as Array<{ who?: string; grade?: string }>)
     : []
@@ -203,6 +203,18 @@ function HadithRow({ hadith }: { hadith: Hadith }) {
           {hadith.translation_fr ?? hadith.translation_en}
         </p>
       )}
+
+      {/* Actions */}
+      <div className="mt-2.5 flex justify-start">
+        <TextDetailActions
+          id={hadith.id}
+          source_type="hadith"
+          reference={hadith.reference}
+          collection={collection}
+          arabic={hadith.arabic}
+          translation={hadith.translation_fr ?? hadith.translation_en ?? undefined}
+        />
+      </div>
     </div>
   )
 }

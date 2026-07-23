@@ -5,6 +5,7 @@ import { getQuranSurah, type Ayah } from "@/lib/api"
 import { SURAH_META } from "@/lib/quran-meta"
 import AudioPlayButton from "@/components/AudioPlayButton"
 import type { Metadata } from "next"
+import TextDetailActions from "@/components/TextDetailActions"
 
 interface Props {
   params: Promise<{ surah: string }>
@@ -200,6 +201,18 @@ export default async function SurahPage({ params }: Props) {
                   {ayah.translation_fr ?? ayah.translation_en}
                 </p>
               )}
+
+              {/* Actions */}
+              <div className="mt-2.5 flex justify-start">
+                <TextDetailActions
+                  id={ayah.id}
+                  source_type="quran"
+                  reference={ayah.reference}
+                  collection="quran"
+                  arabic={ayah.arabic}
+                  translation={ayah.translation_fr ?? ayah.translation_en ?? undefined}
+                />
+              </div>
             </div>
           )
         })}
