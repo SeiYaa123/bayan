@@ -12,15 +12,15 @@
   "dir": "auto",
   "icons": [
     {
-      "src": "/icon-192.svg",
+      "src": "/symbole_gold.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.svg",
+      "src": "/symbole_gold.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
@@ -30,14 +30,14 @@
       "short_name": "Recherche",
       "description": "Lancer une recherche sémantique",
       "url": "/search",
-      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/symbole_gold.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Corpus Islamique",
       "short_name": "Corpus",
       "description": "Consulter les sourates, hadiths et tafsir",
       "url": "/corpus",
-      "icons": [{ "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/symbole_gold.png", "sizes": "192x192", "type": "image/png" }]
     }
   ],
   "categories": ["education", "books", "reference"]
