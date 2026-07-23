@@ -137,7 +137,7 @@ export default function LandingPage() {
           {/* Main Hero Content (Centré verticalement) */}
           <div className="relative max-w-5xl mx-auto text-center z-10 my-auto w-full">
             {/* Emblem spacer placeholder to maintain vertical layout alignment */}
-            <div className="h-[200px] mb-4 pointer-events-none opacity-0" />
+            <div className="h-[100px] md:h-[200px] mb-4 pointer-events-none opacity-0" />
 
             <h1
               className="text-2xl md:text-3xl font-light tracking-wide text-white mb-8 max-w-2xl mx-auto px-4"
