@@ -86,7 +86,7 @@ export default function LandingPage() {
           style={{
             position: scrolled ? "relative" : "absolute",
             left: scrolled ? "0" : "50%",
-            top: scrolled ? "0" : "18vh",
+            top: scrolled ? "0" : "var(--hero-logo-top)",
             transform: scrolled
               ? "translateX(0) scale(0.42)"
               : "translateX(-50%) scale(1)",
@@ -96,17 +96,17 @@ export default function LandingPage() {
           <img
             src="/symbole_gold.png"
             alt="Emblème"
-            className="h-28 md:h-36 w-auto object-contain transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            className="w-auto object-contain transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
             style={{
-              height: scrolled ? "96px" : "140px",
+              height: scrolled ? "96px" : "var(--hero-logo-symbol-h)",
             }}
           />
           <span
             className="text-[#C89D3A] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] select-none opacity-80"
             style={{
-              fontSize: scrolled ? "16px" : "28px",
-              marginLeft: scrolled ? "4px" : "12px",
-              marginRight: scrolled ? "4px" : "12px",
+              fontSize: scrolled ? "16px" : "var(--hero-logo-diamond-size)",
+              marginLeft: scrolled ? "4px" : "var(--hero-logo-diamond-mx)",
+              marginRight: scrolled ? "4px" : "var(--hero-logo-diamond-mx)",
               transform: scrolled ? "translateY(-0.5px)" : "translateY(-1px)",
             }}
           >
@@ -115,9 +115,9 @@ export default function LandingPage() {
           <img
             src="/bayran_text.png"
             alt="Bayran"
-            className="h-9 md:h-11 w-auto object-contain transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            className="w-auto object-contain transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
             style={{
-              height: scrolled ? "36px" : "50px",
+              height: scrolled ? "36px" : "var(--hero-logo-text-h)",
               transform: scrolled ? "translateY(0.8px)" : "translateY(1.5px)",
             }}
           />

@@ -23,6 +23,23 @@
   --color-text-muted:   rgba(250,247,239,0.55);
   --color-accent:       #C89D3A;
   --color-sage:         #C89D3A;
+
+  /* ── Hero Logo Sizes ── */
+  --hero-logo-symbol-h: 140px;
+  --hero-logo-text-h: 50px;
+  --hero-logo-diamond-size: 28px;
+  --hero-logo-diamond-mx: 12px;
+  --hero-logo-top: 18vh;
+}
+
+@media (max-w: 768px) {
+  :root {
+    --hero-logo-symbol-h: 68px;
+    --hero-logo-text-h: 24px;
+    --hero-logo-diamond-size: 13px;
+    --hero-logo-diamond-mx: 5px;
+    --hero-logo-top: 15vh;
+  }
 }
 
 @theme inline {
