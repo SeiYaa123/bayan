@@ -57,7 +57,8 @@ export default function TextDetailActions({
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
           </svg>
-          <span>Analyser la racine</span>
+          <span className="hidden sm:inline">Analyser la racine</span>
+          <span className="sm:hidden">Racine</span>
         </button>
 
         {/* Bookmark Toggle Button */}
@@ -83,7 +84,8 @@ export default function TextDetailActions({
               d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364l-7.682-7.682a4.5 4.5 0 010-6.364z"
             />
           </svg>
-          <span>{bookmarked ? "Favori" : "Ajouter aux favoris"}</span>
+          <span className="hidden sm:inline">{bookmarked ? "Favori" : "Ajouter aux favoris"}</span>
+          <span className="sm:hidden">Favori</span>
         </button>
 
         {/* Share Quote Card Button */}
@@ -99,7 +101,8 @@ export default function TextDetailActions({
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <span>Générer une carte</span>
+          <span className="hidden sm:inline">Générer une carte</span>
+          <span className="sm:hidden">Carte</span>
         </button>
       </div>
 
