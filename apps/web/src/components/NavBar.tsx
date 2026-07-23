@@ -66,8 +66,8 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
           <div 
             className="flex-1 flex justify-start items-center transition-opacity duration-500"
             style={{ 
-              opacity: transparentOnTop ? 0 : 1,
-              pointerEvents: transparentOnTop ? "none" : "auto"
+              opacity: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? 0 : 1,
+              pointerEvents: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? "none" : "auto"
             }}
           >
             <Link href="/" className="flex items-center gap-2 group">
@@ -125,7 +125,7 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}
-            className="md:hidden flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded-lg transition-colors"
+            className="md:hidden flex flex-col justify-center items-center gap-1.5 w-12 h-12 rounded-lg transition-colors"
             style={{ color: transparentOnTop && !scrolled ? "#B88A44" : "var(--color-text)" }}
           >
             <span

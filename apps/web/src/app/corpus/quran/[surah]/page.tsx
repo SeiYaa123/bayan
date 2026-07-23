@@ -168,22 +168,32 @@ export default async function SurahPage({ params }: Props) {
       </header>
 
       {/* Navigation prev/next */}
-      <div className="max-w-4xl mx-auto px-6 pt-6 flex justify-between items-center text-sm">
+      <div className="max-w-4xl mx-auto px-6 pt-6 flex justify-between items-center text-xs sm:text-sm">
         {prevSurah ? (
           <Link
             href={`/corpus/quran/${prevSurah}`}
-            className="hover:opacity-80 transition-opacity"
-            style={{ color: "var(--color-text-muted)" }}
+            className="px-4 py-2 rounded-lg border transition-all duration-300 hover:border-[rgba(200,157,58,0.45)] hover:bg-white/[0.02]"
+            style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}
           >
             ← Sourate {prevSurah}
+            {SURAH_META[prevSurah] && (
+              <span className="hidden sm:inline ml-2" style={{ color: "var(--color-gold)" }}>
+                {SURAH_META[prevSurah].transliteration}
+              </span>
+            )}
           </Link>
         ) : <span />}
         {nextSurah ? (
           <Link
             href={`/corpus/quran/${nextSurah}`}
-            className="hover:opacity-80 transition-opacity"
-            style={{ color: "var(--color-text-muted)" }}
+            className="px-4 py-2 rounded-lg border transition-all duration-300 hover:border-[rgba(200,157,58,0.45)] hover:bg-white/[0.02]"
+            style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}
           >
+            {SURAH_META[nextSurah] && (
+              <span className="hidden sm:inline mr-2" style={{ color: "var(--color-gold)" }}>
+                {SURAH_META[nextSurah].transliteration}
+              </span>
+            )}
             Sourate {nextSurah} →
           </Link>
         ) : <span />}
@@ -295,16 +305,16 @@ export default async function SurahPage({ params }: Props) {
         className="border-t px-6 py-6"
         style={{ borderColor: "var(--color-border)" }}
       >
-        <div className="max-w-4xl mx-auto flex justify-between items-center text-sm">
+        <div className="max-w-4xl mx-auto flex justify-between items-center text-xs sm:text-sm">
           {prevSurah ? (
             <Link
               href={`/corpus/quran/${prevSurah}`}
-              className="hover:opacity-80 transition-opacity"
-              style={{ color: "var(--color-text-muted)" }}
+              className="px-4 py-2 rounded-lg border transition-all duration-300 hover:border-[rgba(200,157,58,0.45)] hover:bg-white/[0.02]"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}
             >
               ← Sourate {prevSurah}
               {SURAH_META[prevSurah] && (
-                <span className="ml-2" style={{ color: "var(--color-gold)" }}>
+                <span className="hidden sm:inline ml-2" style={{ color: "var(--color-gold)" }}>
                   {SURAH_META[prevSurah].transliteration}
                 </span>
               )}
@@ -313,11 +323,11 @@ export default async function SurahPage({ params }: Props) {
           {nextSurah ? (
             <Link
               href={`/corpus/quran/${nextSurah}`}
-              className="hover:opacity-80 transition-opacity"
-              style={{ color: "var(--color-text-muted)" }}
+              className="px-4 py-2 rounded-lg border transition-all duration-300 hover:border-[rgba(200,157,58,0.45)] hover:bg-white/[0.02]"
+              style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)" }}
             >
               {SURAH_META[nextSurah] && (
-                <span className="mr-2" style={{ color: "var(--color-gold)" }}>
+                <span className="hidden sm:inline mr-2" style={{ color: "var(--color-gold)" }}>
                   {SURAH_META[nextSurah].transliteration}
                 </span>
               )}
