@@ -298,7 +298,7 @@ export default function ResultCard({ result, index }: ResultCardProps) {
               Voir dans le corpus →
             </span>
             <span
-              className="text-xs px-2 py-0.5 rounded-full"
+              className="text-xs px-2 py-0.5 rounded-full ml-auto"
               style={{
                 background: "var(--color-surface-2)",
                 color: "var(--color-text-muted)",
@@ -307,14 +307,6 @@ export default function ResultCard({ result, index }: ResultCardProps) {
             >
               {matchLabel}
             </span>
-            <Link
-              href={`/text/${result.id}`}
-              className="text-xs ml-auto transition-opacity hover:opacity-70"
-              style={{ color: "var(--color-text-muted)" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              Textes associés →
-            </Link>
           </div>
         </div>
       </article>

@@ -165,13 +165,6 @@ function HadithRow({ hadith, collection }: { hadith: Hadith; collection: string 
             {mainGrade.grade}{mainGrade.who ? ` · ${mainGrade.who}` : ""}
           </span>
         )}
-        <Link
-          href={`/text/${hadith.id}`}
-          className="opacity-0 group-hover:opacity-100 transition-opacity text-xs ml-auto"
-          style={{ color: "var(--color-text-muted)" }}
-        >
-          connexions →
-        </Link>
       </div>
 
       {/* Arabic */}

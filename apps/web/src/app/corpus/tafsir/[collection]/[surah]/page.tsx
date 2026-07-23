@@ -155,13 +155,6 @@ export default async function TafsirSurahPage({ params }: Props) {
                 >
                   {entry.reference}
                 </span>
-                <Link
-                  href={`/text/${entry.id}`}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-xs"
-                  style={{ color: "var(--color-text-muted)" }}
-                >
-                  connexions →
-                </Link>
               </div>
 
               <p

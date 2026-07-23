@@ -160,14 +160,6 @@ export default async function SurahPage({ params }: Props) {
                   arabicText={ayah.arabic}
                   variant="badge"
                 />
-
-                <Link
-                  href={`/text/${ayah.id}`}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-xs ml-auto"
-                  style={{ color: "var(--color-text-muted)" }}
-                >
-                  connexions →
-                </Link>
               </div>
 
               {/* Arabic */}

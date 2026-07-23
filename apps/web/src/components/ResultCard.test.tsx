@@ -92,11 +92,6 @@ describe("ResultCard", () => {
     expect(screen.getByText(/custom_corpus/)).toBeInTheDocument()
   })
 
-  test("connexions link points to /text/:id", () => {
-    renderWithAudio(<ResultCard result={make()} />)
-    const link = screen.getByRole("link", { name: /textes associés/i })
-    expect(link).toHaveAttribute("href", "/text/abc-123")
-  })
 
   test("renders play recitation button for quran results", () => {
     renderWithAudio(<ResultCard result={make()} />)
