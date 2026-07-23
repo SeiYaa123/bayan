@@ -534,12 +534,124 @@ function TextCardView({ card, onOpenShare }: { card: TextCard; onOpenShare: (dat
   )
 }
 
+interface QuizQuestion {
+  question: string
+  options: string[]
+  answerIndex: number
+  explanation: string
+}
+
+interface Quiz {
+  num: number
+  title: string
+  subtitle: string
+  questions: QuizQuestion[]
+}
+
+const QUIZZES: Quiz[] = [
+  {
+    num: 1,
+    title: "La Shahada",
+    subtitle: "Comprendre le témoignage de foi",
+    questions: [
+      {
+        question: "Que signifie littéralement le mot « Islam » ?",
+        options: [
+          "Soumission et paix en Dieu",
+          "La quête du savoir spirituel",
+          "La récitation des écritures",
+          "La prière continuelle"
+        ],
+        answerIndex: 0,
+        explanation: "L'Islam provient de la racine S-L-M qui évoque à la fois la paix (Salam) et la soumission volontaire à Dieu (Istislam)."
+      },
+      {
+        question: "Selon la croyance islamique, quelle est la relation entre les prophètes ?",
+        options: [
+          "Ils enseignaient des religions opposées",
+          "Ils partageaient le même message fondamental de soumission à Dieu",
+          "Chaque prophète annulait complètement le précédent",
+          "Ils n'avaient aucun lien spirituel commun"
+        ],
+        answerIndex: 1,
+        explanation: "Le Coran (notamment 2:136) énonce que les croyants croient en tous les prophètes sans distinction, car ils partageaient le même message divin d'unicité."
+      }
+    ]
+  },
+  {
+    num: 2,
+    title: "L'Unicité (Tawhid)",
+    subtitle: "Le dogme central de la foi",
+    questions: [
+      {
+        question: "Quelle sourate du Coran équivaut au tiers du Coran en termes de foi et d'Unicité ?",
+        options: [
+          "Sourate Al-Fatiha (L'Ouverture)",
+          "Sourate Al-Ikhlas (Le Monothéisme Pur)",
+          "Sourate Al-Baqara (La Vache)",
+          "Sourate Yassin"
+        ],
+        answerIndex: 1,
+        explanation: "La sourate Al-Ikhlas résume le Tawhid (l'Unicité divine) en 4 versets simples et profonds, ce qui lui vaut cette haute valeur d'enseignement."
+      },
+      {
+        question: "Dans le verset du Trône (2:255), quel attribut d'Allah signifie qu'Il veille constamment et maintient la création ?",
+        options: [
+          "Al-Rahman (Le Miséricordieux)",
+          "Al-Qayyoum (Le Vivant qui subsiste par Lui-même)",
+          "Al-Khaliq (Le Créateur)",
+          "Al-Alim (L'Omniscient)"
+        ],
+        answerIndex: 1,
+        explanation: "Al-Qayyoum désigne Celui qui subsiste par Lui-même et soutient activement toute chose sans fatigue ni sommeil."
+      }
+    ]
+  },
+  {
+    num: 3,
+    title: "La Patience (As-Sabr)",
+    subtitle: "L'endurance et la persévérance spirituelle",
+    questions: [
+      {
+        question: "Combien de fois environ la patience est-elle évoquée dans le Coran ?",
+        options: [
+          "Plus de 10 fois",
+          "Plus de 30 fois",
+          "Plus de 90 fois",
+          "Plus de 200 fois"
+        ],
+        answerIndex: 2,
+        explanation: "Le mot patience (Sabr) et ses dérivés reviennent plus de 90 fois dans le Coran, marquant son importance capitale face aux épreuves."
+      },
+      {
+        question: "Selon le célèbre hadith (Muslim 2999), quel double trait caractérise l'attitude idéale du croyant ?",
+        options: [
+          "La plainte et le doute",
+          "La gratitude dans l'aisance (shukr) et la patience dans l'épreuve (sabr)",
+          "L'isolement et la résignation",
+          "La fierté et la vengeance"
+        ],
+        answerIndex: 1,
+        explanation: "Le Prophète a dit : 'Si un bonheur l'atteint, il remercie et c'est un bien pour lui. Si un malheur le frappe, il endure avec patience et c'est un bien pour lui.'"
+      }
+    ]
+  }
+]
+
 export default function ApprentissagePage() {
-  const [activeTab, setActiveTab] = useState<"lessons" | "bookmarks">("lessons")
+  const [activeTab, setActiveTab] = useState<"lessons" | "quizzes" | "bookmarks">("lessons")
   const [activeLesson, setActiveLesson] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [shareData, setShareData] = useState<ShareCardData | null>(null)
+
+  // Quiz States
+  const [selectedQuizIndex, setSelectedQuizIndex] = useState<number | null>(null)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null)
+  const [answered, setAnswered] = useState(false)
+  const [score, setScore] = useState(0)
+  const [quizFinished, setQuizFinished] = useState(false)
 
   const { bookmarks, removeBookmark, clearBookmarks } = useBookmark()
 
@@ -626,6 +738,19 @@ export default function ApprentissagePage() {
                 </svg>
                 Leçons ({LESSONS.length})
               </span>
+            </button>
+            <button
+              onClick={() => setActiveTab("quizzes")}
+              className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center gap-1.5 ${
+                activeTab === "quizzes"
+                  ? "bg-[#C89D3A] text-black shadow-md"
+                  : "text-[#FAF7EF]/60 hover:text-white"
+              }`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              <span>Quizz ({QUIZZES.length})</span>
             </button>
             <button
               onClick={() => setActiveTab("bookmarks")}
@@ -876,6 +1001,282 @@ export default function ApprentissagePage() {
             </div>
           </main>
         </>
+      )}
+
+      {/* VIEW 3: INTERACTIVE QUIZZES */}
+      {activeTab === "quizzes" && (
+        <main className="max-w-4xl mx-auto px-6 pb-20 pt-4">
+          {selectedQuizIndex === null ? (
+            // Quiz Selection List
+            <div className="flex flex-col gap-6">
+              <div className="text-center sm:text-left mb-4">
+                <h2
+                  className="text-xl font-medium mb-1.5"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--color-gold)" }}
+                >
+                  Sélectionnez un sujet à évaluer
+                </h2>
+                <p className="text-xs text-white/50">
+                  Testez vos connaissances acquises sur les différentes leçons avec nos questionnaires interactifs.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {QUIZZES.map((quiz, idx) => (
+                  <div
+                    key={quiz.num}
+                    className="p-6 rounded-xl border transition-all duration-300 hover:scale-[1.015] hover:border-[#C89D3A]/30 flex flex-col justify-between min-h-[160px]"
+                    style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-white/5 text-[#C89D3A]">
+                          Quiz {quiz.num}
+                        </span>
+                        <span className="text-xs text-white/40">
+                          {quiz.questions.length} Questions
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-medium text-white mb-1">
+                        {quiz.title}
+                      </h3>
+                      <p className="text-xs text-white/50">
+                        {quiz.subtitle}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        setSelectedQuizIndex(idx)
+                        setCurrentQuestionIndex(0)
+                        setSelectedOptionIndex(null)
+                        setAnswered(false)
+                        setScore(0)
+                        setQuizFinished(false)
+                      }}
+                      className="mt-4 w-full py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all"
+                      style={{ background: "var(--color-gold)", color: "#050d07" }}
+                    >
+                      Commencer le Quiz
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            // Active Quiz Playthrough
+            (() => {
+              const quiz = QUIZZES[selectedQuizIndex]
+              const question = quiz.questions[currentQuestionIndex]
+
+              return (
+                <div
+                  className="p-6 md:p-8 rounded-xl border flex flex-col gap-6"
+                  style={{ background: "var(--color-surface)", borderColor: "var(--color-border)" }}
+                >
+                  {/* Active Quiz Header */}
+                  <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: "var(--color-border)" }}>
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider font-semibold text-[#C89D3A]">
+                        {quiz.title}
+                      </span>
+                      <h2 className="text-sm font-semibold text-white/60">
+                        Question {currentQuestionIndex + 1} sur {quiz.questions.length}
+                      </h2>
+                    </div>
+                    <button
+                      onClick={() => setSelectedQuizIndex(null)}
+                      className="text-xs px-3 py-1.5 rounded-lg border text-white/60 hover:text-white transition-colors"
+                      style={{ borderColor: "var(--color-border)" }}
+                    >
+                      Quitter le Quiz
+                    </button>
+                  </div>
+
+                  {!quizFinished ? (
+                    // In-progress Question Screen
+                    <div className="flex flex-col gap-6">
+                      {/* Progress Bar */}
+                      <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
+                        <div
+                          className="h-full bg-[#C89D3A] transition-all duration-300"
+                          style={{ width: `${((currentQuestionIndex) / quiz.questions.length) * 100}%` }}
+                        />
+                      </div>
+
+                      {/* Question Text */}
+                      <h3
+                        className="text-lg md:text-xl text-white font-medium my-2"
+                        style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                      >
+                        {question.question}
+                      </h3>
+
+                      {/* Options List */}
+                      <div className="flex flex-col gap-3">
+                        {question.options.map((option, oIdx) => {
+                          let optionStyle = {
+                            background: "rgba(250, 247, 239, 0.02)",
+                            borderColor: "var(--color-border)",
+                            color: "rgba(250, 247, 239, 0.7)",
+                          }
+
+                          if (selectedOptionIndex === oIdx) {
+                            if (answered) {
+                              if (oIdx === question.answerIndex) {
+                                optionStyle = {
+                                  background: "rgba(16, 185, 129, 0.15)",
+                                  borderColor: "rgba(16, 185, 129, 0.4)",
+                                  color: "#34d399",
+                                }
+                              } else {
+                                optionStyle = {
+                                  background: "rgba(239, 68, 68, 0.15)",
+                                  borderColor: "rgba(239, 68, 68, 0.4)",
+                                  color: "#f87171",
+                                }
+                              }
+                            } else {
+                              optionStyle = {
+                                background: "rgba(200, 157, 58, 0.1)",
+                                borderColor: "var(--color-gold)",
+                                color: "var(--color-gold)",
+                              }
+                            }
+                          } else if (answered && oIdx === question.answerIndex) {
+                            optionStyle = {
+                              background: "rgba(16, 185, 129, 0.15)",
+                              borderColor: "rgba(16, 185, 129, 0.4)",
+                              color: "#34d399",
+                            }
+                          }
+
+                          return (
+                            <button
+                              key={oIdx}
+                              disabled={answered}
+                              onClick={() => setSelectedOptionIndex(oIdx)}
+                              className="w-full text-left p-4 rounded-xl border text-sm font-medium transition-all hover:scale-[1.005] flex items-center justify-between"
+                              style={optionStyle}
+                            >
+                              <span>{option}</span>
+                              {answered && oIdx === question.answerIndex && (
+                                <svg className="w-5 h-5 text-[#34d399]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                              )}
+                              {answered && selectedOptionIndex === oIdx && oIdx !== question.answerIndex && (
+                                <svg className="w-5 h-5 text-[#f87171]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              )}
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {/* Explanation Feedback Block */}
+                      {answered && (
+                        <div
+                          className="p-4 rounded-xl border flex flex-col gap-1 text-xs"
+                          style={{
+                            background: "rgba(200, 157, 58, 0.04)",
+                            borderColor: "rgba(200, 157, 58, 0.2)",
+                            color: "var(--color-text-muted)"
+                          }}
+                        >
+                          <span className="font-semibold text-white">Explication :</span>
+                          <span>{question.explanation}</span>
+                        </div>
+                      )}
+
+                      {/* Bottom Action Controls */}
+                      <div className="flex items-center justify-end mt-4">
+                        {!answered ? (
+                          <button
+                            disabled={selectedOptionIndex === null}
+                            onClick={() => {
+                              if (selectedOptionIndex === null) return
+                              setAnswered(true)
+                              if (selectedOptionIndex === question.answerIndex) {
+                                setScore((s) => s + 1)
+                              }
+                            }}
+                            className="px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-opacity disabled:opacity-50"
+                            style={{ background: "var(--color-gold)", color: "#050d07" }}
+                          >
+                            Valider la réponse
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              if (currentQuestionIndex + 1 < quiz.questions.length) {
+                                setCurrentQuestionIndex((idx) => idx + 1)
+                                setSelectedOptionIndex(null)
+                                setAnswered(false)
+                              } else {
+                                setQuizFinished(true)
+                              }
+                            }}
+                            className="px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider"
+                            style={{ background: "var(--color-gold)", color: "#050d07" }}
+                          >
+                            {currentQuestionIndex + 1 < quiz.questions.length ? "Question suivante" : "Terminer"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // Quiz End Result Screen
+                    <div className="flex flex-col items-center gap-6 py-6 text-center">
+                      <div className="relative w-24 h-24 flex items-center justify-center rounded-full border-4" style={{ borderColor: "var(--color-gold)" }}>
+                        <span className="text-2xl font-bold text-white">
+                          {score} / {quiz.questions.length}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-medium text-white mb-2">
+                          Quiz Terminé !
+                        </h3>
+                        <p className="text-xs text-white/50 max-w-sm leading-relaxed">
+                          {score === quiz.questions.length
+                            ? "Félicitations ! Vous avez répondu correctement à toutes les questions."
+                            : score > 0
+                            ? "Bien joué ! Vous avez de bonnes bases. Retentez pour obtenir le score parfait."
+                            : "Prenez le temps de relire les leçons associées pour mieux retenir ces concepts clés."}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4 mt-2">
+                        <button
+                          onClick={() => {
+                            setCurrentQuestionIndex(0)
+                            setSelectedOptionIndex(null)
+                            setAnswered(false)
+                            setScore(0)
+                            setQuizFinished(false)
+                          }}
+                          className="px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-transform hover:scale-105"
+                          style={{ background: "var(--color-gold)", color: "#050d07" }}
+                        >
+                          Recommencer
+                        </button>
+                        <button
+                          onClick={() => setSelectedQuizIndex(null)}
+                          className="px-5 py-2.5 rounded-lg border text-xs font-semibold uppercase tracking-wider text-white/60 hover:text-white transition-all"
+                          style={{ borderColor: "var(--color-border)" }}
+                        >
+                          Retour aux Quiz
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })()
+          )}
+        </main>
       )}
 
       {/* VIEW 2: BOOKMARKS / FAVORIS MANAGER */}
