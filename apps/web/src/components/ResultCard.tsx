@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import type { SearchResult } from "@/lib/api"
 import { useAudio, parseQuranReference } from "@/context/AudioContext"
 import { useBookmark } from "@/context/BookmarkContext"
@@ -306,14 +307,14 @@ export default function ResultCard({ result, index }: ResultCardProps) {
             >
               {matchLabel}
             </span>
-            <a
+            <Link
               href={`/text/${result.id}`}
               className="text-xs ml-auto transition-opacity hover:opacity-70"
               style={{ color: "var(--color-text-muted)" }}
               onClick={(e) => e.stopPropagation()}
             >
               Textes associés →
-            </a>
+            </Link>
           </div>
         </div>
       </article>

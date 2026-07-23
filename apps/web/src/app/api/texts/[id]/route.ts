@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import allAyahs from "@/data/quran_all_ayahs.json"
 import hadithsData from "@/data/hadiths_complete.json"
+import tafsirData from "@/data/tafsir_ibn_kathir.json"
 
 const TAFSIR_CONNECTIONS = [
   {
@@ -77,6 +78,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     found = hadithsData.find((h) => h.id === cleanId || h.reference === cleanId)
   }
 
+  // Find in Tafsir if not in Quran and Hadiths
+  if (!found) {
+    found = tafsirData.find((t) => t.id === cleanId || t.reference === cleanId)
+  }
+
   if (!found) {
     return NextResponse.json({ error: "Text not found" }, { status: 404 })
   }
@@ -114,10 +120,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   // Pull related items from the other category
   if (found.source_type === "quran") {
     let candidates = hadithsData
-    if (isMercy) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("miséricord"))
-    else if (isPatience) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("patien") || h.translation_fr.toLowerCase().includes("endur"))
-    else if (isIntention) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("intention"))
-    else if (isJustice) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("justic") || h.translation_fr.toLowerCase().includes("équit"))
+    if (isMercy) candidates = hadithsData.filter(h => h.translation_fr && h.translation_fr.toLowerCase().includes("miséricord"))
+    else if (isPatience) candidates = hadithsData.filter(h => h.translation_fr && (h.translation_fr.toLowerCase().includes("patien") || h.translation_fr.toLowerCase().includes("endur")))
+    else if (isIntention) candidates = hadithsData.filter(h => h.translation_fr && h.translation_fr.toLowerCase().includes("intention"))
+    else if (isJustice) candidates = hadithsData.filter(h => h.translation_fr && (h.translation_fr.toLowerCase().includes("justic") || h.translation_fr.toLowerCase().includes("équit")))
     
     candidates.slice(0, 3).forEach((c) => {
       connections.push({
@@ -133,12 +139,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
   } else {
     let candidates = allAyahs
-    if (isMercy) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("miséricord"))
-    else if (isPatience) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("enduran") || a.translation_fr.toLowerCase().includes("patience"))
-    else if (isIntention) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("coeur") || a.translation_fr.toLowerCase().includes("poitrine"))
-    else if (isJustice) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("justic") || a.translation_fr.toLowerCase().includes("équit"))
-    else if (isRepentance) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("repent") || a.translation_fr.toLowerCase().includes("pardonn"))
-    else if (isGuidance) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("guid") || a.translation_fr.toLowerCase().includes("chemin"))
+    if (isMercy) candidates = allAyahs.filter(a => a.translation_fr && a.translation_fr.toLowerCase().includes("miséricord"))
+    else if (isPatience) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("enduran") || a.translation_fr.toLowerCase().includes("patience")))
+    else if (isIntention) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("coeur") || a.translation_fr.toLowerCase().includes("poitrine")))
+    else if (isJustice) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("justic") || a.translation_fr.toLowerCase().includes("équit")))
+    else if (isRepentance) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("repent") || a.translation_fr.toLowerCase().includes("pardonn")))
+    else if (isGuidance) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("guid") || a.translation_fr.toLowerCase().includes("chemin")))
 
     candidates.slice(0, 3).forEach((c) => {
       connections.push({

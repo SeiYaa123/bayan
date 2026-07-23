@@ -21,6 +21,19 @@ export const normalizeText = (text: string): string =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
+export function normalizeArabic(text: string): string {
+  if (!text) return "";
+  return text
+    // Remove diacritics (harakat/tashkeel)
+    .replace(/[\u064B-\u065F\u0670]/g, "")
+    // Normalize Alifs (إ, أ, آ -> ا)
+    .replace(/[\u0622\u0623\u0625]/g, "\u0627")
+    // Normalize Yaa (ى -> ي)
+    .replace(/\u0649/g, "\u064A")
+    // Normalize Taa Marbuta (ة -> ه)
+    .replace(/\u0629/g, "\u0647");
+}
+
 export interface SearchResult {
   id: string
   reference: string
@@ -101,9 +114,12 @@ export async function search(
 
   if (query.trim()) {
     const qNorm = normalizeText(query)
+    const qArabic = normalizeArabic(query)
+    const containsArabic = /[\u0600-\u06FF]/.test(query)
+
     filtered = dataset.filter(
       (item) =>
-        (item.arabic && item.arabic.includes(query)) ||
+        (item.arabic && (containsArabic ? normalizeArabic(item.arabic).includes(qArabic) : item.arabic.includes(query))) ||
         (item.translation_fr && normalizeText(item.translation_fr).includes(qNorm)) ||
         (item.translation_en && normalizeText(item.translation_en).includes(qNorm)) ||
         (item.reference && normalizeText(item.reference).includes(qNorm))
@@ -134,6 +150,10 @@ export async function getTextWithConnections(id: string) {
   let found: any = allAyahs.find((a) => a.id === cleanId || a.reference === cleanId)
   if (!found) {
     found = hadithsData.find((h) => h.id === cleanId || h.reference === cleanId)
+  }
+  if (!found) {
+    const tafsirData = (await import("@/data/tafsir_ibn_kathir.json")).default
+    found = tafsirData.find((t) => t.id === cleanId || t.reference === cleanId)
   }
   if (!found) throw new Error(`Text not found: ${id}`)
 
@@ -230,10 +250,10 @@ export async function getTextWithConnections(id: string) {
 
   if (found.source_type === "quran") {
     let candidates = hadithsData
-    if (isMercy) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("miséricord"))
-    else if (isPatience) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("patien") || h.translation_fr.toLowerCase().includes("endur"))
-    else if (isIntention) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("intention"))
-    else if (isJustice) candidates = hadithsData.filter(h => h.translation_fr.toLowerCase().includes("justic") || h.translation_fr.toLowerCase().includes("équit"))
+    if (isMercy) candidates = hadithsData.filter(h => h.translation_fr && h.translation_fr.toLowerCase().includes("miséricord"))
+    else if (isPatience) candidates = hadithsData.filter(h => h.translation_fr && (h.translation_fr.toLowerCase().includes("patien") || h.translation_fr.toLowerCase().includes("endur")))
+    else if (isIntention) candidates = hadithsData.filter(h => h.translation_fr && h.translation_fr.toLowerCase().includes("intention"))
+    else if (isJustice) candidates = hadithsData.filter(h => h.translation_fr && (h.translation_fr.toLowerCase().includes("justic") || h.translation_fr.toLowerCase().includes("équit")))
     
     candidates.slice(0, 3).forEach((c) => {
       connections.push({
@@ -249,12 +269,12 @@ export async function getTextWithConnections(id: string) {
     })
   } else {
     let candidates = allAyahs
-    if (isMercy) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("miséricord"))
-    else if (isPatience) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("enduran") || a.translation_fr.toLowerCase().includes("patience"))
-    else if (isIntention) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("coeur") || a.translation_fr.toLowerCase().includes("poitrine"))
-    else if (isJustice) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("justic") || a.translation_fr.toLowerCase().includes("équit"))
-    else if (isRepentance) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("repent") || a.translation_fr.toLowerCase().includes("pardonn"))
-    else if (isGuidance) candidates = allAyahs.filter(a => a.translation_fr.toLowerCase().includes("guid") || a.translation_fr.toLowerCase().includes("chemin"))
+    if (isMercy) candidates = allAyahs.filter(a => a.translation_fr && a.translation_fr.toLowerCase().includes("miséricord"))
+    else if (isPatience) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("enduran") || a.translation_fr.toLowerCase().includes("patience")))
+    else if (isIntention) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("coeur") || a.translation_fr.toLowerCase().includes("poitrine")))
+    else if (isJustice) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("justic") || a.translation_fr.toLowerCase().includes("équit")))
+    else if (isRepentance) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("repent") || a.translation_fr.toLowerCase().includes("pardonn")))
+    else if (isGuidance) candidates = allAyahs.filter(a => a.translation_fr && (a.translation_fr.toLowerCase().includes("guid") || a.translation_fr.toLowerCase().includes("chemin")))
 
     candidates.slice(0, 3).forEach((c) => {
       connections.push({

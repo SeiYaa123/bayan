@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import allAyahs from "@/data/quran_all_ayahs.json"
 import hadithsData from "@/data/hadiths_complete.json"
 import tafsirData from "@/data/tafsir_ibn_kathir.json"
-import { normalizeText } from "@/lib/api"
+import { normalizeText, normalizeArabic } from "@/lib/api"
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -38,9 +38,12 @@ export async function GET(request: NextRequest) {
 
   if (q.trim()) {
     const qNorm = normalizeText(q)
+    const qArabic = normalizeArabic(q)
+    const containsArabic = /[\u0600-\u06FF]/.test(q)
+
     filtered = dataset.filter(
       (item) =>
-        (item.arabic && item.arabic.includes(q)) ||
+        (item.arabic && (containsArabic ? normalizeArabic(item.arabic).includes(qArabic) : item.arabic.includes(q))) ||
         (item.translation_fr && normalizeText(item.translation_fr).includes(qNorm)) ||
         (item.translation_en && normalizeText(item.translation_en).includes(qNorm)) ||
         (item.reference && normalizeText(item.reference).includes(qNorm))

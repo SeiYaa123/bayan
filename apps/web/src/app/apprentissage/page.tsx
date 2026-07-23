@@ -358,6 +358,46 @@ const LESSONS: Lesson[] = [
     takeaway:
       "La miséricorde n'est pas une option dans l'Islam — elle est au cœur de la conception de Dieu, du Prophète et de la communauté.",
   },
+  {
+    num: 9,
+    arabic: "الصبر",
+    title: "La Patience",
+    subtitle: "L'endurance et la constance spirituelle",
+    intro:
+      "La patience (As-Sabr) est l'une des vertus les plus célébrées et centrales de la spiritualité islamique. Elle n'est pas une simple résignation passive, mais une force active de persévérance et de confiance absolue en Dieu face aux épreuves de la vie. Le Coran mentionne le mot patience plus de quatre-vingt-dix fois et promet aux endurants une récompense sans limite. Être patient, c'est maîtriser son âme face à l'adversité, rester constant dans le bien, et savoir attendre la délivrance divine avec sérénité.",
+    texts: [
+      {
+        id: "quran-2-153",
+        source: "quran",
+        reference: "2:153",
+        arabic: "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُواْ ٱسْتَعِينُواْ بِٱلصَّبْرِ وَٱلصَّلَوٰةِۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ",
+        translation:
+          "Ô vous qui croyez ! Cherchez secours dans l'endurance et la prière. Car Allah est, certes, avec les endurants.",
+        corpusHref: "/corpus/quran/2",
+      },
+      {
+        id: "quran-103-3",
+        source: "quran",
+        reference: "103:3",
+        arabic: "وَتَوَاصَوْاْ بِٱلْحَقِّ وَتَوَاصَوْاْ بِٱلصَّبْرِ",
+        translation:
+          "et s'enjoignent mutuellement la vérité et s'enjoignent mutuellement l'endurance.",
+        corpusHref: "/corpus/quran/103",
+      },
+      {
+        id: "hadith-muslim-2999",
+        source: "hadith",
+        reference: "Muslim 2999",
+        arabic:
+          "عَجَبًا لأَمْرِ الْمُؤْمِنِ إِنَّ أَمْرَهُ كُلَّهُ خَيْرٌ وَلَيْسَ ذَاكَ لأَحَدٍ إِلاَّ لِلْمُؤْمِنِ إِنْ أَصَابَتْهُ سَرَّاءُ شَكَرَ فَكَانَ خَيْرًا لَهُ وَإِنْ أَصَابَتْهُ ضَرَّاءُ صَبَرَ فَكَانَ خَيْرًا لَهُ",
+        translation:
+          "Le cas du croyant est étonnant ! Tout ce qui lui arrive est un bien, et ceci n'appartient qu'au croyant. Si un bonheur le touche, il remercie Dieu et c'est un bien pour lui. Et si un malheur le frappe, il endure avec patience et c'est un bien pour lui.",
+        corpusHref: "/corpus/hadith/muslim",
+      },
+    ],
+    takeaway:
+      "La patience est la moitié de la foi. Elle transforme chaque épreuve de la vie en une opportunité de rapprochement spirituel.",
+  },
 ]
 
 const SOURCE_COLORS = {
