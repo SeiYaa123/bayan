@@ -1,4 +1,4 @@
-const CACHE_NAME = "bayran-v5";
+const CACHE_NAME = "bayran-v6";
 const STATIC_ASSETS = [
   "/",
   "/search",
