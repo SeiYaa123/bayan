@@ -64,11 +64,11 @@ export default function NavBar({ transparentOnTop = false }: NavBarProps) {
 
           {/* Gauche : Logo */}
           <div 
-            className="flex-1 flex justify-start items-center transition-opacity duration-500"
-            style={{ 
-              opacity: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? (scrolled ? 1 : 0) : 1,
-              pointerEvents: (transparentOnTop && (pathname === "/" || pathname === "/landing")) ? (scrolled ? "auto" : "none") : "auto"
-            }}
+            className={`flex-1 flex justify-start items-center transition-opacity duration-500 ${
+              (transparentOnTop && (pathname === "/" || pathname === "/landing"))
+                ? `md:opacity-0 md:pointer-events-none ${scrolled ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`
+                : "opacity-100 pointer-events-auto"
+            }`}
           >
             <Link href="/" className="flex items-center gap-2 group">
               <img
