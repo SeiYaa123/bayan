@@ -129,7 +129,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   isLoopingRef.current = isLooping
   reciterRef.current = reciter
 
-  useEffect(() => {
+  const initAudio = () => {
+    if (audioRef.current) return audioRef.current
+
     const audio = new Audio()
     audioRef.current = audio
 
@@ -177,7 +179,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    const handleError = () => {
+    const handleError = (e: Event) => {
+      console.error("Audio playback error event:", e)
       setIsLoading(false)
       setIsPlaying(false)
     }
@@ -189,14 +192,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     audio.addEventListener("ended", handleEnded)
     audio.addEventListener("error", handleError)
 
+    return audio
+  }
+
+  useEffect(() => {
     return () => {
-      audio.pause()
-      audio.removeEventListener("loadedmetadata", handleLoadedMetadata)
-      audio.removeEventListener("timeupdate", handleTimeUpdate)
-      audio.removeEventListener("waiting", handleWaiting)
-      audio.removeEventListener("canplay", handleCanPlay)
-      audio.removeEventListener("ended", handleEnded)
-      audio.removeEventListener("error", handleError)
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
     }
   }, [])
 
@@ -207,14 +210,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, [playbackRate])
 
   const loadAndPlayTrack = (track: AudioTrack, reciterSubfolder: string) => {
-    if (!audioRef.current) return
+    const audio = initAudio()
     const url = getAyahAudioUrl(track.surah, track.ayah, reciterSubfolder)
     setIsLoading(true)
     setCurrentTime(0)
     setDuration(0)
-    audioRef.current.src = url
-    audioRef.current.playbackRate = playbackRate
-    audioRef.current
+    audio.src = url
+    audio.playbackRate = playbackRate
+    audio
       .play()
       .then(() => setIsPlaying(true))
       .catch((err) => {
@@ -237,11 +240,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }
 
   const resumeTrack = () => {
-    if (audioRef.current && currentTrack) {
-      audioRef.current
+    const audio = initAudio()
+    if (currentTrack) {
+      audio
         .play()
         .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false))
+        .catch((err) => {
+          console.error("Audio resume error:", err)
+          setIsPlaying(false)
+        })
     }
   }
 
